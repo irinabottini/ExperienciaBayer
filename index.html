@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Experiencia Bayer | Campus Argentina</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <div class="bg-grid"></div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <p class="brand-kicker">Experiencia Bayer</p>
+          <h1>Campus Argentina</h1>
+        </div>
+
+        <nav class="menu" aria-label="Secciones principales">
+          <button class="menu-btn active" data-panel="inicio">Inicio</button>
+          <button class="menu-btn" data-panel="perfil">Mi Perfil</button>
+          <button class="menu-btn" data-panel="ubicaciones">Ubicaciones</button>
+          <button class="menu-btn" data-panel="organizar">Quiero Organizar Mi Evento</button>
+          <button class="menu-btn" data-panel="eventos">Eventos Creados</button>
+          <button class="menu-btn" data-panel="calendario">Calendario Global</button>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <section class="panel active" id="panel-inicio">
+          <div class="hero">
+            <p class="pill">Nuevo portal interno</p>
+            <h2>Bienvenidos a la nueva Experiencia Bayer</h2>
+            <p>
+              Esta plataforma centraliza la gestion de actividades en todos los sites de Argentina.
+              Cada usuario podra planificar, coordinar y hacer seguimiento de eventos desde un unico
+              lugar.
+            </p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card reveal">
+              <h3>1. Perfil y permisos</h3>
+              <p>
+                Tu perfil se cargara desde Supabase con datos de contacto, rol y preferencias para
+                acelerar la creacion de eventos.
+              </p>
+            </article>
+            <article class="card reveal">
+              <h3>2. Sites de Argentina</h3>
+              <p>
+                El panel de ubicaciones va a consolidar todos los sites disponibles, con capacidad,
+                servicios y calendario asociado.
+              </p>
+            </article>
+            <article class="card reveal">
+              <h3>3. Flujo de eventos</h3>
+              <p>
+                Desde el alta hasta la difusion por mail, con trazabilidad para volver a editar y
+                coordinar cada detalle operativo.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-perfil">
+          <div class="panel-head">
+            <h2>Mi Perfil</h2>
+            <p>Informacion local simulada. Luego se reemplaza por datos en Supabase.</p>
+          </div>
+          <div class="profile-box">
+            <p><strong>Nombre:</strong> <span id="profile-name"></span></p>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Rol:</strong> <span id="profile-role"></span></p>
+            <p><strong>Site principal:</strong> <span id="profile-site"></span></p>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-ubicaciones">
+          <div class="panel-head">
+            <h2>Panel de Ubicaciones</h2>
+            <p>Vista inicial de los sites registrados para Argentina.</p>
+          </div>
+          <div class="locations-grid" id="locations-grid"></div>
+        </section>
+
+        <section class="panel" id="panel-organizar">
+          <div class="panel-head">
+            <h2>Quiero Organizar Mi Evento</h2>
+            <p>Carga minima para calendarizar objetivo, lugar y logistica.</p>
+          </div>
+
+          <form id="event-form" class="event-form">
+            <label>
+              Titulo del evento
+              <input name="title" type="text" placeholder="Ej: Jornada de Innovacion" required />
+            </label>
+
+            <label>
+              Objetivo
+              <textarea name="objective" rows="3" placeholder="Que queremos lograr" required></textarea>
+            </label>
+
+            <label>
+              Lugar
+              <select name="location" id="event-location" required></select>
+            </label>
+
+            <div class="row">
+              <label>
+                Fecha
+                <input name="date" type="date" required />
+              </label>
+              <label>
+                Invitados
+                <input name="guests" type="number" min="1" placeholder="0" required />
+              </label>
+            </div>
+
+            <label>
+              Comida y catering
+              <input name="food" type="text" placeholder="Coffee break, almuerzo, etc." />
+            </label>
+
+            <label>
+              Notas adicionales
+              <textarea name="notes" rows="2" placeholder="Necesidades tecnicas, transporte, etc."></textarea>
+            </label>
+
+            <button type="submit" class="primary-btn">Guardar evento</button>
+            <p id="form-message" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="panel" id="panel-eventos">
+          <div class="panel-head">
+            <h2>Eventos Creados</h2>
+            <p>Eventos creados por tu usuario para editar y gestionar comunicaciones.</p>
+          </div>
+          <div id="events-list" class="events-list"></div>
+        </section>
+
+        <section class="panel" id="panel-calendario">
+          <div class="panel-head">
+            <h2>Calendario Global</h2>
+            <p>Filtra eventos por site para visualizar actividad consolidada.</p>
+          </div>
+
+          <div class="calendar-filter">
+            <label for="calendar-location">Filtrar por ubicacion</label>
+            <select id="calendar-location">
+              <option value="all">Todos los sites</option>
+            </select>
+          </div>
+
+          <div id="calendar-list" class="calendar-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
