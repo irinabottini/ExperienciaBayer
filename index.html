@@ -20,17 +20,32 @@
     <div class="layout">
       <aside class="sidebar">
         <div class="brand">
+          <img class="brand-logo" src="bayer-logo.jpg" alt="Bayer" />
           <p class="brand-kicker">Experiencia Bayer</p>
           <h1>Campus Argentina</h1>
         </div>
 
         <nav class="menu" aria-label="Secciones principales">
           <button class="menu-btn active" data-panel="inicio">Inicio</button>
-          <button class="menu-btn" data-panel="perfil">Mi Perfil</button>
+          <button class="menu-btn" data-panel="perfil">Perfil</button>
           <button class="menu-btn" data-panel="ubicaciones">Ubicaciones</button>
+
+          <button class="module-toggle" id="experience-toggle" aria-expanded="false" type="button">
+            Nueva Experiencia (Lapiz + Estrella)
+          </button>
+          <div class="submenu" id="experience-submenu" hidden>
+            <button class="submenu-btn" data-experience="field_tour" type="button">Bayer Field Tour</button>
+            <button class="submenu-btn" data-experience="generacion" type="button">Generacion de demanda</button>
+            <button class="submenu-btn" data-experience="capacitacion" type="button">Jornadas de capacitacion</button>
+            <button class="submenu-btn" data-experience="licencias" type="button">Licencias</button>
+            <button class="submenu-btn" data-experience="eventos_bayer" type="button">Eventos Bayer</button>
+            <button class="submenu-btn" data-experience="visitas_site" type="button">Visitas a site</button>
+          </div>
+
           <button class="menu-btn" data-panel="organizar">Quiero Organizar Mi Evento</button>
           <button class="menu-btn" data-panel="eventos">Eventos Creados</button>
           <button class="menu-btn" data-panel="calendario">Calendario Global</button>
+          <button class="menu-btn" data-panel="usuarios" id="menu-usuarios">Usuarios App</button>
         </nav>
       </aside>
 
@@ -44,6 +59,20 @@
               Cada usuario podra planificar, coordinar y hacer seguimiento de eventos desde un unico
               lugar.
             </p>
+          </div>
+
+          <div class="welcome-square reveal">
+            <h3>Como funciona esta herramienta</h3>
+            <p>
+              Unifica perfiles, ubicaciones y gestion de eventos para operar con reglas de rol claras
+              y trazabilidad completa en cada site.
+            </p>
+            <ul class="trigger-list">
+              <li>Que objetivo quiero lograr con este evento y para quien?</li>
+              <li>Que site y equipo deben involucrarse para ejecutarlo bien?</li>
+              <li>Necesito feedback y/o assessments para medir impacto?</li>
+            </ul>
+            <p class="trigger-author">Preguntas disparadoras (IRI)</p>
           </div>
 
           <div class="card-grid">
@@ -73,7 +102,7 @@
 
         <section class="panel" id="panel-perfil">
           <div class="panel-head">
-            <h2>Mi Perfil</h2>
+            <h2>Perfil</h2>
             <p>Informacion local simulada. Luego se reemplaza por datos en Supabase.</p>
           </div>
           <div class="profile-box">
@@ -81,13 +110,26 @@
             <p><strong>Email:</strong> <span id="profile-email"></span></p>
             <p><strong>Rol:</strong> <span id="profile-role"></span></p>
             <p><strong>Site principal:</strong> <span id="profile-site"></span></p>
+            <p><strong>Equipo:</strong> <span id="profile-team"></span></p>
+            <p><strong>Area:</strong> <span id="profile-area"></span></p>
+            <p><strong>Telefono:</strong> <span id="profile-phone"></span></p>
+            <p><strong>Permisos:</strong> <span id="profile-permissions"></span></p>
+          </div>
+
+          <div class="profile-box" id="demo-role-box">
+            <p><strong>Modo demo:</strong> cambiar usuario para validar permisos por rol.</p>
+            <label for="profile-selector">Usuario activo</label>
+            <select id="profile-selector"></select>
           </div>
         </section>
 
         <section class="panel" id="panel-ubicaciones">
           <div class="panel-head">
             <h2>Panel de Ubicaciones</h2>
-            <p>Vista inicial de los sites registrados para Argentina.</p>
+            <p>
+              Los referentes de site editan su site; administradores editan todos;
+              el resto puede visualizar.
+            </p>
           </div>
           <div class="locations-grid" id="locations-grid"></div>
         </section>
@@ -96,6 +138,22 @@
           <div class="panel-head">
             <h2>Quiero Organizar Mi Evento</h2>
             <p>Carga minima para calendarizar objetivo, lugar y logistica.</p>
+          </div>
+
+          <div class="access-note" id="organizar-access-note"></div>
+          <div class="experience-note" id="experience-note"></div>
+
+          <div id="training-logic" class="profile-box" hidden>
+            <h3>Bloque Jornadas de Capacitacion (logica Campus Bayer)</h3>
+            <p>
+              Para esta experiencia se mantiene la preparacion guiada de jornada,
+              con foco en convocatoria, contenido y seguimiento posterior.
+            </p>
+            <ul class="simple-list">
+              <li>Definir publico objetivo y modalidad.</li>
+              <li>Confirmar material y necesidades del site.</li>
+              <li>Cerrar feedback y/o assessments de impacto.</li>
+            </ul>
           </div>
 
           <form id="event-form" class="event-form">
@@ -135,6 +193,17 @@
               <textarea name="notes" rows="2" placeholder="Necesidades tecnicas, transporte, etc."></textarea>
             </label>
 
+            <div class="row">
+              <label>
+                <input name="needsFeedback" type="checkbox" />
+                Requiere feedback
+              </label>
+              <label>
+                <input name="needsAssessment" type="checkbox" />
+                Requiere assessment
+              </label>
+            </div>
+
             <button type="submit" class="primary-btn">Guardar evento</button>
             <p id="form-message" aria-live="polite"></p>
           </form>
@@ -143,7 +212,7 @@
         <section class="panel" id="panel-eventos">
           <div class="panel-head">
             <h2>Eventos Creados</h2>
-            <p>Eventos creados por tu usuario para editar y gestionar comunicaciones.</p>
+            <p id="events-scope-copy"></p>
           </div>
           <div id="events-list" class="events-list"></div>
         </section>
@@ -162,6 +231,14 @@
           </div>
 
           <div id="calendar-list" class="calendar-list"></div>
+        </section>
+
+        <section class="panel" id="panel-usuarios">
+          <div class="panel-head">
+            <h2>Usuarios App</h2>
+            <p>Disponible solo para administradores y lideres.</p>
+          </div>
+          <div class="events-list" id="users-list"></div>
         </section>
       </main>
     </div>

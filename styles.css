@@ -84,6 +84,13 @@ body {
   line-height: 1.2;
 }
 
+.brand-logo {
+  width: 118px;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 6px;
+}
+
 .brand-kicker {
   margin: 0;
   color: rgba(255, 255, 255, 0.78);
@@ -116,6 +123,43 @@ body {
   color: #ffffff;
   background: linear-gradient(130deg, rgba(0, 174, 239, 0.35), rgba(69, 214, 0, 0.3));
   transform: translateX(2px);
+}
+
+.module-toggle {
+  margin-top: 8px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submenu {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.submenu-btn {
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  padding: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+}
+
+.submenu-btn:hover,
+.submenu-btn.active {
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .content {
@@ -167,6 +211,43 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.welcome-square {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.welcome-square h3 {
+  margin: 0;
+  font-family: Sora, sans-serif;
+}
+
+.welcome-square p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+.trigger-list,
+.simple-list {
+  margin: 12px 0 0;
+  padding-left: 20px;
+}
+
+.trigger-list li,
+.simple-list li {
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.trigger-author {
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 13px;
+}
+
 .card {
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -211,6 +292,10 @@ body {
   padding: 22px;
 }
 
+#demo-role-box {
+  margin-top: 14px;
+}
+
 .profile-box p {
   margin: 10px 0;
 }
@@ -250,6 +335,11 @@ body {
   display: grid;
   gap: 6px;
   font-size: 14px;
+}
+
+.event-form input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
 }
 
 .event-form input,
@@ -331,6 +421,16 @@ body {
 .calendar-filter {
   padding: 14px;
   margin-bottom: 12px;
+}
+
+.access-note,
+.experience-note {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  padding: 10px 12px;
+  color: var(--muted);
 }
 
 @keyframes rise {
