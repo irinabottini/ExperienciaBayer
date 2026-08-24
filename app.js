@@ -162,10 +162,8 @@ const usersList = document.getElementById("users-list");
 const organizarAccessNote = document.getElementById("organizar-access-note");
 const experienceNote = document.getElementById("experience-note");
 const trainingLogicBox = document.getElementById("training-logic");
-const experienceToggle = document.getElementById("experience-toggle");
-const experienceSubmenu = document.getElementById("experience-submenu");
 const menuUsuarios = document.getElementById("menu-usuarios");
-const submenuButtons = document.querySelectorAll(".submenu-btn");
+const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
 
 function getActiveUser() {
   return users.find((user) => user.id === activeUserId) ?? users[0];
@@ -553,7 +551,7 @@ eventsList.addEventListener("click", (event) => {
       return;
     }
     formMessage.textContent = "Proximo paso: cargar este evento en el formulario para editar.";
-    openPanel("organizar");
+    openPanel("nueva-experiencia");
   }
 
   if (action === "mail") {
@@ -590,21 +588,15 @@ profileSelector.addEventListener("change", () => {
   rerenderAll();
 });
 
-experienceToggle.addEventListener("click", () => {
-  const isExpanded = experienceToggle.getAttribute("aria-expanded") === "true";
-  experienceToggle.setAttribute("aria-expanded", String(!isExpanded));
-  experienceSubmenu.hidden = isExpanded;
-});
-
-submenuButtons.forEach((button) => {
+experienceTypeButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedExperience = button.dataset.experience;
 
-    submenuButtons.forEach((item) => item.classList.remove("active"));
+    experienceTypeButtons.forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
 
     renderOrganizarAccess();
-    openPanel("organizar");
+    openPanel("nueva-experiencia");
   });
 });
 

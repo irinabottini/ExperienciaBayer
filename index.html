@@ -29,20 +29,16 @@
           <button class="menu-btn active" data-panel="inicio">Inicio</button>
           <button class="menu-btn" data-panel="perfil">Perfil</button>
           <button class="menu-btn" data-panel="ubicaciones">Ubicaciones</button>
-
-          <button class="module-toggle" id="experience-toggle" aria-expanded="false" type="button">
-            Nueva Experiencia (Lapiz + Estrella)
+          <button class="menu-btn menu-btn-icon" data-panel="nueva-experiencia">
+            <span class="module-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M4 20h4l10-10a2 2 0 0 0-4-4L4 16v4z"></path>
+                <path d="M15.5 4.5l4 4"></path>
+                <path d="M19 2l.9 1.9L22 5l-2.1 1.1L19 8l-1.1-1.9L15.8 5l2.1-1.1L19 2z"></path>
+              </svg>
+            </span>
+            Nueva Experiencia
           </button>
-          <div class="submenu" id="experience-submenu" hidden>
-            <button class="submenu-btn" data-experience="field_tour" type="button">Bayer Field Tour</button>
-            <button class="submenu-btn" data-experience="generacion" type="button">Generacion de demanda</button>
-            <button class="submenu-btn" data-experience="capacitacion" type="button">Jornadas de capacitacion</button>
-            <button class="submenu-btn" data-experience="licencias" type="button">Licencias</button>
-            <button class="submenu-btn" data-experience="eventos_bayer" type="button">Eventos Bayer</button>
-            <button class="submenu-btn" data-experience="visitas_site" type="button">Visitas a site</button>
-          </div>
-
-          <button class="menu-btn" data-panel="organizar">Quiero Organizar Mi Evento</button>
           <button class="menu-btn" data-panel="eventos">Eventos Creados</button>
           <button class="menu-btn" data-panel="calendario">Calendario Global</button>
           <button class="menu-btn" data-panel="usuarios" id="menu-usuarios">Usuarios App</button>
@@ -134,10 +130,19 @@
           <div class="locations-grid" id="locations-grid"></div>
         </section>
 
-        <section class="panel" id="panel-organizar">
+        <section class="panel" id="panel-nueva-experiencia">
           <div class="panel-head">
-            <h2>Quiero Organizar Mi Evento</h2>
+            <h2>Nueva Experiencia</h2>
             <p>Carga minima para calendarizar objetivo, lugar y logistica.</p>
+          </div>
+
+          <div class="experience-types" id="experience-types">
+            <button class="experience-type-btn" data-experience="field_tour" type="button">Bayer Field Tour</button>
+            <button class="experience-type-btn" data-experience="generacion" type="button">Generacion de demanda</button>
+            <button class="experience-type-btn active" data-experience="capacitacion" type="button">Jornadas de capacitacion</button>
+            <button class="experience-type-btn" data-experience="licencias" type="button">Licencias</button>
+            <button class="experience-type-btn" data-experience="eventos_bayer" type="button">Eventos Bayer</button>
+            <button class="experience-type-btn" data-experience="visitas_site" type="button">Visitas a site</button>
           </div>
 
           <div class="access-note" id="organizar-access-note"></div>
