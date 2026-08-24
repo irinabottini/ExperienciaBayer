@@ -1,14 +1,19 @@
 :root {
-  --bg: #f6f8f3;
-  --text: #112214;
-  --muted: #4a5d4f;
-  --surface: #ffffffcc;
-  --line: #d8e2d4;
-  --brand: #2f6f3e;
-  --brand-2: #f29f3f;
-  --accent: #0f3f22;
+  --navy: #003a52;
+  --deep: #07152c;
+  --cyan: #00aeef;
+  --cyan-dark: #007fae;
+  --green: #45d600;
+  --bg: #f7fbfc;
+  --text: #072235;
+  --muted: #496675;
+  --surface: rgba(255, 255, 255, 0.9);
+  --line: #d9e8ee;
+  --brand: #00aeef;
+  --brand-2: #45d600;
+  --accent: #003a52;
   --radius: 18px;
-  --shadow: 0 18px 50px rgba(28, 52, 28, 0.12);
+  --shadow: 0 18px 50px rgba(7, 21, 44, 0.16);
 }
 
 * {
@@ -19,8 +24,8 @@ body {
   margin: 0;
   font-family: Manrope, "Segoe UI", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 10% 10%, #eef7df, transparent 40%),
-    radial-gradient(circle at 85% 0%, #ffe7c8, transparent 35%), var(--bg);
+  background: linear-gradient(135deg, rgba(0, 174, 239, 0.11), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
   min-height: 100vh;
 }
 
@@ -35,7 +40,7 @@ body {
 .orb-a {
   width: 340px;
   height: 340px;
-  background: #75c577;
+  background: rgba(69, 214, 0, 0.45);
   top: -120px;
   left: -90px;
 }
@@ -43,7 +48,7 @@ body {
 .orb-b {
   width: 260px;
   height: 260px;
-  background: #ffc16b;
+  background: rgba(0, 174, 239, 0.45);
   right: 2%;
   bottom: 8%;
 }
@@ -52,8 +57,8 @@ body {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-image: linear-gradient(rgba(17, 34, 20, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 34, 20, 0.04) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(0, 58, 82, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 58, 82, 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(circle at center, black 50%, transparent 100%);
 }
@@ -66,8 +71,8 @@ body {
 
 .sidebar {
   backdrop-filter: blur(8px);
-  background: rgba(17, 34, 20, 0.88);
-  color: #f3f8ee;
+  background: linear-gradient(180deg, var(--navy), var(--deep));
+  color: #ffffff;
   padding: 32px 22px;
   border-right: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -81,7 +86,7 @@ body {
 
 .brand-kicker {
   margin: 0;
-  color: #c7dfc7;
+  color: rgba(255, 255, 255, 0.78);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -98,7 +103,7 @@ body {
   text-align: left;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: transparent;
-  color: #edf5eb;
+  color: rgba(255, 255, 255, 0.86);
   border-radius: 14px;
   padding: 12px 14px;
   font-size: 14px;
@@ -108,7 +113,8 @@ body {
 
 .menu-btn:hover,
 .menu-btn.active {
-  background: linear-gradient(130deg, rgba(117, 197, 119, 0.35), rgba(242, 159, 63, 0.35));
+  color: #ffffff;
+  background: linear-gradient(130deg, rgba(0, 174, 239, 0.35), rgba(69, 214, 0, 0.3));
   transform: translateX(2px);
 }
 
@@ -137,7 +143,7 @@ body {
   display: inline-flex;
   border-radius: 999px;
   padding: 6px 12px;
-  background: rgba(47, 111, 62, 0.12);
+  background: rgba(0, 174, 239, 0.12);
   color: var(--accent);
   font-size: 13px;
   margin: 0;
@@ -166,7 +172,7 @@ body {
   border-radius: 16px;
   background: #fff;
   padding: 18px;
-  box-shadow: 0 10px 25px rgba(15, 63, 34, 0.08);
+  box-shadow: 0 10px 25px rgba(7, 21, 44, 0.1);
 }
 
 .card h3 {
@@ -217,7 +223,7 @@ body {
 }
 
 .location-card {
-  border: 1px solid #dbe7d8;
+  border: 1px solid #d9e8ee;
   background: #fff;
   border-radius: 14px;
   padding: 12px;
@@ -253,7 +259,7 @@ body {
   width: 100%;
   padding: 11px 12px;
   border-radius: 10px;
-  border: 1px solid #bfd1bc;
+  border: 1px solid #c7dce6;
   font: inherit;
   background: #fff;
 }
@@ -267,7 +273,7 @@ body {
 .primary-btn {
   border: none;
   border-radius: 12px;
-  background: linear-gradient(130deg, var(--brand), var(--brand-2));
+  background: linear-gradient(130deg, var(--brand), var(--cyan-dark));
   color: #fff;
   padding: 12px 16px;
   font-weight: 700;
@@ -282,7 +288,7 @@ body {
 
 .event-item,
 .calendar-item {
-  border-bottom: 1px solid #dce5d9;
+  border-bottom: 1px solid #d9e8ee;
   padding: 14px 18px;
 }
 
@@ -310,11 +316,16 @@ body {
 }
 
 .action-btn {
-  border: 1px solid #bfd1bc;
+  border: 1px solid #c7dce6;
   background: #fff;
   border-radius: 9px;
   padding: 8px 10px;
   cursor: pointer;
+}
+
+.action-btn:hover {
+  border-color: rgba(0, 174, 239, 0.45);
+  color: var(--navy);
 }
 
 .calendar-filter {
