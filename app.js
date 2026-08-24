@@ -80,6 +80,9 @@ const locations = [
     name: "Pilar",
     province: "Buenos Aires",
     capacity: 220,
+    kind: "site",
+    mapX: 56,
+    mapY: 34,
     managerEmail: "laura.site@bayer.com",
     notes: "Site principal para jornadas corporativas"
   },
@@ -88,6 +91,9 @@ const locations = [
     name: "Zarate",
     province: "Buenos Aires",
     capacity: 180,
+    kind: "oficina",
+    mapX: 60,
+    mapY: 31,
     managerEmail: "carlos.ce@bayer.com",
     notes: "Alta demanda para visitas tecnicas"
   },
@@ -96,6 +102,9 @@ const locations = [
     name: "Rancul",
     province: "La Pampa",
     capacity: 95,
+    kind: "campo",
+    mapX: 43,
+    mapY: 45,
     managerEmail: "laura.site@bayer.com",
     notes: "Capacitaciones de escala media"
   },
@@ -104,6 +113,9 @@ const locations = [
     name: "Maria Eugenia",
     province: "Buenos Aires",
     capacity: 120,
+    kind: "planta",
+    mapX: 57,
+    mapY: 39,
     managerEmail: "martin.equipo@bayer.com",
     notes: "Site con foco en generacion de demanda"
   },
@@ -112,6 +124,9 @@ const locations = [
     name: "Veta Grande",
     province: "Cordoba",
     capacity: 150,
+    kind: "site",
+    mapX: 46,
+    mapY: 38,
     managerEmail: "martin.equipo@bayer.com",
     notes: "Eventos mixtos internos y externos"
   },
@@ -120,10 +135,20 @@ const locations = [
     name: "Rosario",
     province: "Santa Fe",
     capacity: 130,
+    kind: "oficina",
+    mapX: 54,
+    mapY: 35,
     managerEmail: "sofia.organiza@bayer.com",
     notes: "Agenda comercial y demostraciones"
   }
 ];
+
+const locationKinds = {
+  site: { label: "Site", icon: "◆" },
+  oficina: { label: "Oficina", icon: "●" },
+  campo: { label: "Campo", icon: "▲" },
+  planta: { label: "Planta", icon: "■" }
+};
 
 const experienceLabels = {
   field_tour: "Bayer Field Tour",
@@ -164,6 +189,8 @@ const experienceNote = document.getElementById("experience-note");
 const trainingLogicBox = document.getElementById("training-logic");
 const menuUsuarios = document.getElementById("menu-usuarios");
 const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
+const mapLegend = document.getElementById("map-legend");
+const mapMarkers = document.getElementById("map-markers");
 
 function getActiveUser() {
   return users.find((user) => user.id === activeUserId) ?? users[0];
@@ -289,14 +316,18 @@ function renderProfile() {
 function renderLocations() {
   const user = getActiveUser();
   locationsGrid.innerHTML = "";
+  mapMarkers.innerHTML = "";
 
   locations.forEach((location) => {
     const card = document.createElement("article");
     card.className = "location-card";
+    card.dataset.locationId = location.id;
     const editable = canEditLocation(user, location);
+    const kind = locationKinds[location.kind] ?? { label: "Instalacion", icon: "•" };
     card.innerHTML = `
-      <h4>${location.name}</h4>
+      <h4>${kind.icon} ${location.name}</h4>
       <p>${location.province}</p>
+      <p><strong>Tipo:</strong> ${kind.label}</p>
       <p>Capacidad estimada: ${location.capacity} personas</p>
       <p><strong>Responsable:</strong> ${location.managerEmail}</p>
       <p>${location.notes}</p>
@@ -306,7 +337,32 @@ function renderLocations() {
       </button>
     `;
     locationsGrid.appendChild(card);
+
+    const marker = document.createElement("button");
+    marker.type = "button";
+    marker.className = `map-marker marker-${location.kind}`;
+    marker.style.left = `${location.mapX}%`;
+    marker.style.top = `${location.mapY}%`;
+    marker.dataset.id = location.id;
+    marker.title = `${location.name} - ${kind.label}`;
+    marker.textContent = kind.icon;
+    mapMarkers.appendChild(marker);
   });
+
+  renderMapLegend();
+}
+
+function renderMapLegend() {
+  mapLegend.innerHTML = Object.values(locationKinds)
+    .map(
+      (kind) => `
+      <span class="legend-item">
+        <strong>${kind.icon}</strong>
+        ${kind.label}
+      </span>
+    `
+    )
+    .join("");
 }
 
 function renderLocationOptions() {
@@ -581,6 +637,23 @@ locationsGrid.addEventListener("click", (event) => {
   }
 
   alert(`Edicion habilitada para ${location.name}. Proximo paso: abrir modal de edicion.`);
+});
+
+mapMarkers.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  const id = target.dataset.id;
+  if (!id) {
+    return;
+  }
+
+  const locationCard = locationsGrid.querySelector(`[data-location-id="${id}"]`);
+  if (locationCard) {
+    locationCard.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 });
 
 profileSelector.addEventListener("change", () => {

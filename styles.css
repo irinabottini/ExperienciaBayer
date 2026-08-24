@@ -82,6 +82,7 @@ body {
   font-family: Sora, sans-serif;
   font-weight: 700;
   line-height: 1.2;
+  text-align: center;
 }
 
 .brand-logo {
@@ -89,14 +90,17 @@ body {
   border-radius: 8px;
   background: #ffffff;
   padding: 6px;
+  margin: 0 auto;
+  display: block;
 }
 
 .brand-kicker {
-  margin: 0;
+  margin: 8px 0 0;
   color: rgba(255, 255, 255, 0.78);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .menu {
@@ -291,9 +295,103 @@ body {
 
 .locations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 12px;
-  padding: 16px;
+  padding: 2px;
+}
+
+.map-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.arg-map-card,
+.locations-list {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.legend-item {
+  border: 1px solid #c7dce6;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 12px;
+  color: var(--muted);
+  background: #ffffff;
+}
+
+.legend-item strong {
+  color: var(--accent);
+  margin-right: 6px;
+}
+
+.argentina-map {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(0, 174, 239, 0.08), rgba(0, 58, 82, 0.12));
+  overflow: hidden;
+}
+
+.argentina-map svg {
+  width: 100%;
+  height: 520px;
+}
+
+.argentina-map path {
+  fill: rgba(255, 255, 255, 0.78);
+  stroke: rgba(0, 58, 82, 0.35);
+  stroke-width: 2;
+}
+
+.map-markers {
+  position: absolute;
+  inset: 0;
+}
+
+.map-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(7, 21, 44, 0.2);
+}
+
+.marker-site {
+  background: #00aeef;
+}
+
+.marker-oficina {
+  background: #003a52;
+}
+
+.marker-campo {
+  background: #45d600;
+}
+
+.marker-planta {
+  background: #007fae;
 }
 
 .location-card {
@@ -485,6 +583,16 @@ body {
 
   .content {
     padding: 18px;
+  }
+
+  .map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .argentina-map,
+  .argentina-map svg {
+    min-height: 420px;
+    height: 420px;
   }
 
   .row {

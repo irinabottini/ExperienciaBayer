@@ -21,8 +21,8 @@
       <aside class="sidebar">
         <div class="brand">
           <img class="brand-logo" src="bayer-logo.jpg" alt="Bayer" />
-          <p class="brand-kicker">Experiencia Bayer</p>
-          <h1>Campus Argentina</h1>
+          <h1>Experiencia Bayer</h1>
+          <p class="brand-kicker">Portal colaborativo de eventos</p>
         </div>
 
         <nav class="menu" aria-label="Secciones principales">
@@ -127,7 +127,23 @@
               el resto puede visualizar.
             </p>
           </div>
-          <div class="locations-grid" id="locations-grid"></div>
+
+          <div class="map-layout">
+            <div class="arg-map-card">
+              <div class="map-legend" id="map-legend"></div>
+
+              <div class="argentina-map" aria-label="Mapa de Argentina con instalaciones">
+                <svg viewBox="0 0 260 520" role="img" aria-hidden="true">
+                  <path
+                    d="M118 16l14 16 26 8 14 20-4 24 15 20-9 22 8 14-16 29-25 24-14 22 3 23-20 16 3 22-16 21 2 24-19 17 5 22-19 20 2 28-11 15-23 4-14 20-8 30h-23l-6-27 8-34 18-20 23-20 9-26 16-15-2-25 17-17 5-22 17-18-4-23 20-22 6-27 17-24-9-19 11-20-8-20 4-20-8-16-22-8-10-17z"
+                  ></path>
+                </svg>
+                <div class="map-markers" id="map-markers"></div>
+              </div>
+            </div>
+
+            <div class="locations-list" id="locations-grid"></div>
+          </div>
         </section>
 
         <section class="panel" id="panel-nueva-experiencia">
