@@ -110,59 +110,11 @@ body {
   gap: 10px;
 }
 
+    height: 520px;
 .menu-btn {
-  text-align: left;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: transparent;
   color: rgba(255, 255, 255, 0.86);
-  border-radius: 14px;
-  padding: 12px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.menu-btn:hover,
-.menu-btn.active {
-  color: #ffffff;
-  background: linear-gradient(130deg, rgba(0, 174, 239, 0.35), rgba(69, 214, 0, 0.3));
-  transform: translateX(2px);
-}
-
-.menu-btn-icon {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.module-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.18);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.module-icon svg {
-  width: 16px;
-  height: 16px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.content {
-  padding: 32px;
-}
-
-.panel {
-  display: none;
-  animation: rise 0.45s ease;
-}
 
 .panel.active {
   display: block;
@@ -426,6 +378,7 @@ body {
 }
 
 .experience-type-btn {
+  position: relative;
   border: 1px solid #c7dce6;
   border-radius: 10px;
   background: #ffffff;
@@ -434,6 +387,38 @@ body {
   font-weight: 700;
   text-align: left;
   cursor: pointer;
+}
+
+.experience-tooltip {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: calc(100% + 8px);
+  width: min(320px, 80vw);
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--deep);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  box-shadow: 0 12px 26px rgba(7, 21, 44, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.experience-type-btn:hover .experience-tooltip,
+.experience-type-btn:focus-visible .experience-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.training-form {
+  padding: 0;
+  margin-top: 12px;
 }
 
 .experience-type-btn.active,

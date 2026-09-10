@@ -10,6 +10,12 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIINfQ3w0JdT9W8c3CjVf5r5F4n5p4V6mV4="
+      crossorigin=""
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -109,6 +115,9 @@
             <p><strong>Equipo:</strong> <span id="profile-team"></span></p>
             <p><strong>Area:</strong> <span id="profile-area"></span></p>
             <p><strong>Telefono:</strong> <span id="profile-phone"></span></p>
+            <p><strong>Talle:</strong> <span id="profile-talle"></span></p>
+            <p><strong>Condicion alimenticia:</strong> <span id="profile-condicion-alimenticia"></span></p>
+            <p><strong>Companero favorito:</strong> <span id="profile-companero-favorito"></span></p>
             <p><strong>Permisos:</strong> <span id="profile-permissions"></span></p>
           </div>
 
@@ -132,14 +141,7 @@
             <div class="arg-map-card">
               <div class="map-legend" id="map-legend"></div>
 
-              <div class="argentina-map" aria-label="Mapa de Argentina con instalaciones">
-                <svg viewBox="0 0 260 520" role="img" aria-hidden="true">
-                  <path
-                    d="M118 16l14 16 26 8 14 20-4 24 15 20-9 22 8 14-16 29-25 24-14 22 3 23-20 16 3 22-16 21 2 24-19 17 5 22-19 20 2 28-11 15-23 4-14 20-8 30h-23l-6-27 8-34 18-20 23-20 9-26 16-15-2-25 17-17 5-22 17-18-4-23 20-22 6-27 17-24-9-19 11-20-8-20 4-20-8-16-22-8-10-17z"
-                  ></path>
-                </svg>
-                <div class="map-markers" id="map-markers"></div>
-              </div>
+              <div id="location-map" class="argentina-map" aria-label="Mapa de Argentina con instalaciones"></div>
             </div>
 
             <div class="locations-list" id="locations-grid"></div>
@@ -153,31 +155,84 @@
           </div>
 
           <div class="experience-types" id="experience-types">
-            <button class="experience-type-btn" data-experience="field_tour" type="button">Bayer Field Tour</button>
-            <button class="experience-type-btn" data-experience="generacion" type="button">Generacion de demanda</button>
-            <button class="experience-type-btn active" data-experience="capacitacion" type="button">Jornadas de capacitacion</button>
-            <button class="experience-type-btn" data-experience="licencias" type="button">Licencias</button>
-            <button class="experience-type-btn" data-experience="eventos_bayer" type="button">Eventos Bayer</button>
-            <button class="experience-type-btn" data-experience="visitas_site" type="button">Visitas a site</button>
+            <button class="experience-type-btn" data-experience="field_tour" type="button">
+              Bayer Field Tour
+              <span class="experience-tooltip" role="tooltip">Encuentros con equipos internos que recorren distintos campos o localidades para visitar ensayos y conocer el trabajo en territorio.</span>
+            </button>
+            <button class="experience-type-btn" data-experience="generacion" type="button">
+              Generacion de demanda
+              <span class="experience-tooltip" role="tooltip">Encuentros con clientes en un unico lugar o en varias sedes, manteniendo el mismo grupo de participantes.</span>
+            </button>
+            <button class="experience-type-btn active" data-experience="capacitacion" type="button">
+              Jornadas de capacitacion
+              <span class="experience-tooltip" role="tooltip">Jornadas para equipos internos, consultores, representantes de venta y canal Innova, en uno o varios dias y con una sede fija o itinerante.</span>
+            </button>
+            <button class="experience-type-btn" data-experience="licencias" type="button">
+              Licencias
+              <span class="experience-tooltip" role="tooltip">Encuentros con personas externas que pertenecen a otras empresas.</span>
+            </button>
+            <button class="experience-type-btn" data-experience="eventos_bayer" type="button">
+              Eventos Bayer
+              <span class="experience-tooltip" role="tooltip">Encuentros multitudinarios de al menos 100 invitados, realizados en una instalacion principal, con participacion de internos, clientes, licenciatarios y publico diverso. Requieren coordinar servicios como hospedaje, comida, agencia, oradores, entretenimiento, sonido, iluminacion y espacios de conferencia.</span>
+            </button>
+            <button class="experience-type-btn" data-experience="visitas_site" type="button">
+              Visitas a site
+              <span class="experience-tooltip" role="tooltip">Encuentros con participantes internos y externos cuyo foco es conocer la instalacion y el funcionamiento de un site. El owner coordina el evento y el referente responsable de ese site debe aprobar la visita antes de recibir al grupo.</span>
+            </button>
+            <button class="experience-type-btn" data-experience="internacionales" type="button">
+              Experiencias Internacionales
+              <span class="experience-tooltip" role="tooltip">Jornadas destinadas a agroespecialistas premiados por su acompanamiento y contribucion al trabajo de Bayer.</span>
+            </button>
           </div>
 
           <div class="access-note" id="organizar-access-note"></div>
           <div class="experience-note" id="experience-note"></div>
 
           <div id="training-logic" class="profile-box" hidden>
-            <h3>Bloque Jornadas de Capacitacion (logica Campus Bayer)</h3>
+            <h3>Configuracion de Jornada de Capacitacion</h3>
             <p>
-              Para esta experiencia se mantiene la preparacion guiada de jornada,
-              con foco en convocatoria, contenido y seguimiento posterior.
+              Defini la sede principal y las caracteristicas de la jornada para organizar convocatoria, contenido y seguimiento.
             </p>
-            <ul class="simple-list">
-              <li>Definir publico objetivo y modalidad.</li>
-              <li>Confirmar material y necesidades del site.</li>
-              <li>Cerrar feedback y/o assessments de impacto.</li>
-            </ul>
+            <div class="event-form training-form">
+              <label>
+                Instalacion principal
+                <select name="trainingPrimaryLocation" id="training-primary-location">
+                  <option value="">Elegir instalacion</option>
+                </select>
+              </label>
+              <label>
+                Publico objetivo
+                <select name="trainingAudience" id="training-audience">
+                  <option value="internos">Internos</option>
+                  <option value="consultores">Consultores</option>
+                  <option value="rv">Representantes de venta</option>
+                  <option value="innova">Canal Innova</option>
+                  <option value="mixto">Publico mixto</option>
+                </select>
+              </label>
+              <div class="row">
+                <label>
+                  Cantidad de dias
+                  <input name="trainingDays" type="number" min="1" value="1" />
+                </label>
+                <label>
+                  Modalidad
+                  <select name="trainingModality">
+                    <option value="presencial">Presencial</option>
+                    <option value="hibrida">Hibrida</option>
+                    <option value="virtual">Virtual</option>
+                  </select>
+                </label>
+              </div>
+            </div>
           </div>
 
           <form id="event-form" class="event-form">
+            <label>
+              Instalacion principal
+              <select name="location" id="event-location" required></select>
+            </label>
+
             <label>
               Titulo del evento
               <input name="title" type="text" placeholder="Ej: Jornada de Innovacion" required />
@@ -186,11 +241,6 @@
             <label>
               Objetivo
               <textarea name="objective" rows="3" placeholder="Que queremos lograr" required></textarea>
-            </label>
-
-            <label>
-              Lugar
-              <select name="location" id="event-location" required></select>
             </label>
 
             <div class="row">
@@ -264,6 +314,7 @@
       </main>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

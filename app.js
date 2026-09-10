@@ -15,50 +15,65 @@ const users = [
     name: "Irina Bottini",
     email: "irina@bayer.com",
     role: ROLES.ADMIN,
-    siteId: "pilar",
+    siteId: "campus-bayer",
     team: "Comunicacion",
     area: "Comunicaciones",
-    phone: "+54 9 11 1111-1111"
+    phone: "+54 9 11 1111-1111",
+    talle: "M",
+    condicionAlimenticia: "Omnivora",
+    companeroFavorito: "Carlos Ejemplo"
   },
   {
     id: "u2",
     name: "Carlos Ejemplo",
     email: "carlos.ce@bayer.com",
     role: ROLES.LIDER,
-    siteId: "zarate",
+    siteId: "zarate-i",
     team: "CE",
     area: "Direccion",
-    phone: "+54 9 11 2222-2222"
+    phone: "+54 9 11 2222-2222",
+    talle: "L",
+    condicionAlimenticia: "No informado",
+    companeroFavorito: "No informado"
   },
   {
     id: "u3",
     name: "Laura Site",
     email: "laura.site@bayer.com",
     role: ROLES.SITE_REF,
-    siteId: "pilar",
+    siteId: "campus-bayer",
     team: "Operaciones",
     area: "Site Management",
-    phone: "+54 9 11 3333-3333"
+    phone: "+54 9 11 3333-3333",
+    talle: "M",
+    condicionAlimenticia: "Vegetariana",
+    companeroFavorito: "No informado"
   },
   {
     id: "u4",
     name: "Martin Equipo",
     email: "martin.equipo@bayer.com",
     role: ROLES.TEAM_REF,
-    siteId: "pilar",
+    siteId: "campus-bayer",
     team: "Marketing",
     area: "Comercial",
-    phone: "+54 9 11 4444-4444"
+    phone: "+54 9 11 4444-4444",
+    talle: "S",
+    condicionAlimenticia: "No informado",
+    companeroFavorito: "No informado"
   },
   {
     id: "u5",
     name: "Sofia Organiza",
     email: "sofia.organiza@bayer.com",
     role: ROLES.ORG,
-    siteId: "rosario",
+    siteId: "campus-bayer",
     team: "Marketing",
     area: "Comercial",
-    phone: "+54 9 11 5555-5555"
+    phone: "+54 9 11 5555-5555",
+    talle: "M",
+    condicionAlimenticia: "No informado",
+    companeroFavorito: "No informado"
   },
   {
     id: "u6",
@@ -68,7 +83,10 @@ const users = [
     siteId: "zarate",
     team: "Visitante",
     area: "N/A",
-    phone: "N/A"
+    phone: "N/A",
+    talle: "No informado",
+    condicionAlimenticia: "No informado",
+    companeroFavorito: "No informado"
   }
 ];
 
@@ -76,70 +94,134 @@ let activeUserId = users[0].id;
 
 const locations = [
   {
-    id: "pilar",
-    name: "Pilar",
+    id: "zarate-i",
+    name: "Zarate I",
     province: "Buenos Aires",
+    locality: "Zarate",
     capacity: 220,
     kind: "site",
-    mapX: 56,
-    mapY: 34,
+    latitude: -34.075833,
+    longitude: -59.057722,
+    coordinateQuality: "Exacta publicada",
     managerEmail: "laura.site@bayer.com",
-    notes: "Site principal para jornadas corporativas"
+    notes: "Planta industrial"
   },
   {
-    id: "zarate",
-    name: "Zarate",
+    id: "zarate-ii",
+    name: "Zarate II",
     province: "Buenos Aires",
+    locality: "Zarate",
     capacity: 180,
-    kind: "oficina",
-    mapX: 60,
-    mapY: 31,
+    kind: "site",
+    latitude: -34.101,
+    longitude: -59.018,
+    coordinateQuality: "Referencia aproximada",
     managerEmail: "carlos.ce@bayer.com",
-    notes: "Alta demanda para visitas tecnicas"
+    notes: "Planta industrial"
   },
   {
-    id: "rancul",
-    name: "Rancul",
+    id: "maria-eugenia",
+    name: "Planta Maria Eugenia",
     province: "La Pampa",
-    capacity: 95,
-    kind: "campo",
-    mapX: 43,
-    mapY: 45,
-    managerEmail: "laura.site@bayer.com",
-    notes: "Capacitaciones de escala media"
-  },
-  {
-    id: "mariaeugenia",
-    name: "Maria Eugenia",
-    province: "Buenos Aires",
+    locality: "Rojas",
     capacity: 120,
     kind: "planta",
-    mapX: 57,
-    mapY: 39,
-    managerEmail: "martin.equipo@bayer.com",
-    notes: "Site con foco en generacion de demanda"
+    latitude: -34.183,
+    longitude: -60.707,
+    coordinateQuality: "Referencia aproximada",
+    managerEmail: "laura.site@bayer.com",
+    notes: "Procesamiento de semillas de maiz"
   },
   {
-    id: "veta",
-    name: "Veta Grande",
-    province: "Cordoba",
+    id: "fontezuela",
+    name: "Estacion Experimental Fontezuela",
+    province: "Buenos Aires",
+    locality: "Fontezuela / Pergamino",
+    capacity: 95,
+    kind: "campo",
+    latitude: -33.917,
+    longitude: -60.467,
+    coordinateQuality: "Referencia de localidad",
+    managerEmail: "martin.equipo@bayer.com",
+    notes: "I+D y campo experimental"
+  },
+  {
+    id: "campus-bayer",
+    name: "Campus Bayer",
+    province: "Buenos Aires",
+    locality: "Pergamino",
     capacity: 150,
     kind: "site",
-    mapX: 46,
-    mapY: 38,
+    latitude: -33.8928,
+    longitude: -60.5736,
+    coordinateQuality: "Referencia de localidad",
     managerEmail: "martin.equipo@bayer.com",
-    notes: "Eventos mixtos internos y externos"
+    notes: "I+D, demostracion y capacitacion"
   },
   {
-    id: "rosario",
-    name: "Rosario",
-    province: "Santa Fe",
+    id: "rio-cuarto",
+    name: "Estacion de innovacion Rio Cuarto",
+    province: "Cordoba",
+    locality: "Rio Cuarto",
     capacity: 130,
-    kind: "oficina",
-    mapX: 54,
-    mapY: 35,
+    kind: "campo",
+    latitude: -33.1232,
+    longitude: -64.3493,
+    coordinateQuality: "Referencia de localidad",
     managerEmail: "sofia.organiza@bayer.com",
-    notes: "Agenda comercial y demostraciones"
+    notes: "I+D y campo experimental"
+  },
+  {
+    id: "breeding-tucuman",
+    name: "Breeding Tucuman",
+    province: "Tucuman",
+    locality: "Tucuman",
+    capacity: 95,
+    kind: "campo",
+    latitude: -26.826,
+    longitude: -65.173,
+    coordinateQuality: "Referencia aproximada",
+    managerEmail: "laura.site@bayer.com",
+    notes: "I+D y mejoramiento vegetal"
+  },
+  {
+    id: "mendoza",
+    name: "Centro de produccion de vegetales",
+    province: "Mendoza",
+    locality: "Mendoza",
+    capacity: 120,
+    kind: "planta",
+    latitude: -32.8895,
+    longitude: -68.8458,
+    coordinateQuality: "Referencia provincial",
+    managerEmail: "martin.equipo@bayer.com",
+    notes: "Produccion de semillas de hortalizas"
+  },
+  {
+    id: "agricola-testa",
+    name: "Agricola Testa",
+    province: "Buenos Aires",
+    locality: "Pergamino",
+    capacity: 95,
+    kind: "campo",
+    latitude: -33.8928,
+    longitude: -60.5736,
+    coordinateQuality: "Referencia de localidad",
+    managerEmail: "sofia.organiza@bayer.com",
+    notes: "Campo demostrativo asociado"
+  },
+  {
+    id: "cropmix-prodeman",
+    name: "Cropmix / Prodeman",
+    province: "Cordoba",
+    locality: "General Cabrera",
+    capacity: 95,
+    kind: "campo",
+    latitude: -32.8137,
+    longitude: -63.8736,
+    coordinateQuality: "Referencia de localidad",
+    managerEmail: "sofia.organiza@bayer.com",
+    notes: "Campo demostrativo asociado"
   }
 ];
 
@@ -156,7 +238,18 @@ const experienceLabels = {
   capacitacion: "Jornadas de capacitacion",
   licencias: "Licencias",
   eventos_bayer: "Eventos Bayer",
-  visitas_site: "Visitas a site"
+  visitas_site: "Visitas a site",
+  internacionales: "Experiencias Internacionales"
+};
+
+const experienceDescriptions = {
+  field_tour: "Encuentros con equipos internos que recorren distintos campos o localidades para visitar ensayos y conocer el trabajo en territorio.",
+  generacion: "Encuentros con clientes en un unico lugar o en varias sedes, manteniendo el mismo grupo de participantes.",
+  capacitacion: "Jornadas para equipos internos, consultores, representantes de venta y canal Innova, en uno o varios dias y con una sede fija o itinerante.",
+  licencias: "Encuentros con personas externas que pertenecen a otras empresas.",
+  eventos_bayer: "Encuentros multitudinarios de al menos 100 invitados, realizados en una instalacion principal, con participacion de internos, clientes, licenciatarios y publico diverso. Requieren coordinar servicios como hospedaje, comida, agencia, oradores, entretenimiento, sonido, iluminacion y espacios de conferencia.",
+  visitas_site: "Encuentros con participantes internos y externos cuyo foco es conocer la instalacion y el funcionamiento de un site. El owner coordina el evento y el referente responsable de ese site debe aprobar la visita antes de recibir al grupo.",
+  internacionales: "Jornadas destinadas a agroespecialistas premiados por su acompanamiento y contribucion al trabajo de Bayer."
 };
 
 let selectedExperience = "capacitacion";
@@ -171,12 +264,16 @@ const profileNodes = {
   team: document.getElementById("profile-team"),
   area: document.getElementById("profile-area"),
   phone: document.getElementById("profile-phone"),
+  talle: document.getElementById("profile-talle"),
+  condicionAlimenticia: document.getElementById("profile-condicion-alimenticia"),
+  companeroFavorito: document.getElementById("profile-companero-favorito"),
   permissions: document.getElementById("profile-permissions")
 };
 
 const locationsGrid = document.getElementById("locations-grid");
 const eventForm = document.getElementById("event-form");
 const eventLocationSelect = document.getElementById("event-location");
+const trainingPrimaryLocationSelect = document.getElementById("training-primary-location");
 const calendarLocationSelect = document.getElementById("calendar-location");
 const formMessage = document.getElementById("form-message");
 const eventsList = document.getElementById("events-list");
@@ -190,7 +287,12 @@ const trainingLogicBox = document.getElementById("training-logic");
 const menuUsuarios = document.getElementById("menu-usuarios");
 const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
 const mapLegend = document.getElementById("map-legend");
-const mapMarkers = document.getElementById("map-markers");
+const locationMap = L.map("location-map").setView([-34.2, -62.5], 6);
+const locationMarkers = L.layerGroup().addTo(locationMap);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(locationMap);
 
 function getActiveUser() {
   return users.find((user) => user.id === activeUserId) ?? users[0];
@@ -310,13 +412,16 @@ function renderProfile() {
   profileNodes.team.textContent = user.team;
   profileNodes.area.textContent = user.area;
   profileNodes.phone.textContent = user.phone;
+  profileNodes.talle.textContent = user.talle || "No informado";
+  profileNodes.condicionAlimenticia.textContent = user.condicionAlimenticia || "No informado";
+  profileNodes.companeroFavorito.textContent = user.companeroFavorito || "No informado";
   profileNodes.permissions.textContent = getRolePermissionText(user);
 }
 
 function renderLocations() {
   const user = getActiveUser();
   locationsGrid.innerHTML = "";
-  mapMarkers.innerHTML = "";
+  locationMarkers.clearLayers();
 
   locations.forEach((location) => {
     const card = document.createElement("article");
@@ -328,6 +433,8 @@ function renderLocations() {
       <h4>${kind.icon} ${location.name}</h4>
       <p>${location.province}</p>
       <p><strong>Tipo:</strong> ${kind.label}</p>
+      <p><strong>Coordenadas:</strong> ${location.latitude}, ${location.longitude}</p>
+      <p><strong>Calidad:</strong> ${location.coordinateQuality}</p>
       <p>Capacidad estimada: ${location.capacity} personas</p>
       <p><strong>Responsable:</strong> ${location.managerEmail}</p>
       <p>${location.notes}</p>
@@ -338,18 +445,23 @@ function renderLocations() {
     `;
     locationsGrid.appendChild(card);
 
-    const marker = document.createElement("button");
-    marker.type = "button";
-    marker.className = `map-marker marker-${location.kind}`;
-    marker.style.left = `${location.mapX}%`;
-    marker.style.top = `${location.mapY}%`;
-    marker.dataset.id = location.id;
-    marker.title = `${location.name} - ${kind.label}`;
-    marker.textContent = kind.icon;
-    mapMarkers.appendChild(marker);
+    const marker = L.marker([location.latitude, location.longitude]);
+    marker.bindPopup(`
+      <strong>${location.name}</strong><br>
+      ${location.locality}, ${location.province}<br>
+      <small>${location.coordinateQuality}</small>
+    `);
+    marker.on("click", () => {
+      const locationCard = locationsGrid.querySelector(`[data-location-id="${location.id}"]`);
+      if (locationCard) {
+        locationCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+    locationMarkers.addLayer(marker);
   });
 
   renderMapLegend();
+  setTimeout(() => locationMap.invalidateSize(), 0);
 }
 
 function renderMapLegend() {
@@ -367,6 +479,7 @@ function renderMapLegend() {
 
 function renderLocationOptions() {
   eventLocationSelect.innerHTML = "";
+  trainingPrimaryLocationSelect.innerHTML = '<option value="">Elegir instalacion</option>';
   calendarLocationSelect.innerHTML = '<option value="all">Todos los sites</option>';
 
   locations.forEach((location) => {
@@ -375,6 +488,7 @@ function renderLocationOptions() {
     option.textContent = `${location.name} (${location.province})`;
 
     eventLocationSelect.appendChild(option.cloneNode(true));
+    trainingPrimaryLocationSelect.appendChild(option.cloneNode(true));
     calendarLocationSelect.appendChild(option);
   });
 }
@@ -510,7 +624,7 @@ function renderOrganizarAccess() {
     ? "Este modulo esta disponible para tu rol."
     : "Tu rol es Visita: no podes organizar eventos porque no tenes rol operativo en sistema.";
 
-  experienceNote.textContent = `Experiencia seleccionada: ${experienceLabels[selectedExperience]}.`;
+  experienceNote.textContent = `${experienceLabels[selectedExperience]}: ${experienceDescriptions[selectedExperience]}`;
   trainingLogicBox.hidden = selectedExperience !== "capacitacion";
 }
 
@@ -568,6 +682,10 @@ eventForm.addEventListener("submit", (event) => {
     notes: formData.get("notes")?.toString().trim(),
     needsFeedback: formData.get("needsFeedback") === "on",
     needsAssessment: formData.get("needsAssessment") === "on",
+    trainingPrimaryLocation: formData.get("trainingPrimaryLocation")?.toString() || null,
+    trainingAudience: formData.get("trainingAudience")?.toString() || null,
+    trainingDays: formData.get("trainingDays")?.toString() || null,
+    trainingModality: formData.get("trainingModality")?.toString() || null,
     ownerEmail: user.email,
     team: user.team,
     experienceType: selectedExperience,
