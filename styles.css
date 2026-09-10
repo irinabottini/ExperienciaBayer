@@ -1,51 +1,3 @@
-:root {
-  --navy: #003a52;
-  --deep: #07152c;
-  --cyan: #00aeef;
-  --cyan-dark: #007fae;
-  --green: #45d600;
-  --bg: #f7fbfc;
-  --text: #072235;
-  --muted: #496675;
-  --surface: rgba(255, 255, 255, 0.9);
-  --line: #d9e8ee;
-  --brand: #00aeef;
-  --brand-2: #45d600;
-  --accent: #003a52;
-  --radius: 18px;
-  --shadow: 0 18px 50px rgba(7, 21, 44, 0.16);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Manrope, "Segoe UI", sans-serif;
-  color: var(--text);
-  background: linear-gradient(135deg, rgba(0, 174, 239, 0.11), transparent 34%),
-    linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
-  min-height: 100vh;
-}
-
-.bg-orb {
-  position: fixed;
-  z-index: -3;
-  border-radius: 999px;
-  filter: blur(35px);
-  opacity: 0.35;
-}
-
-.orb-a {
-  width: 340px;
-  height: 340px;
-  background: rgba(69, 214, 0, 0.45);
-  top: -120px;
-  left: -90px;
-}
-
-.orb-b {
   width: 260px;
   height: 260px;
   background: rgba(0, 174, 239, 0.45);
@@ -110,11 +62,59 @@ body {
   gap: 10px;
 }
 
-    height: 520px;
 .menu-btn {
+  text-align: left;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: transparent;
   color: rgba(255, 255, 255, 0.86);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.menu-btn:hover,
+.menu-btn.active {
+  color: #ffffff;
+  background: linear-gradient(130deg, rgba(0, 174, 239, 0.35), rgba(69, 214, 0, 0.3));
+  transform: translateX(2px);
+}
+
+.menu-btn-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.module-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.module-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.content {
+  padding: 32px;
+}
+
+.panel {
+  display: none;
+  animation: rise 0.45s ease;
+}
 
 .panel.active {
   display: block;
@@ -175,54 +175,6 @@ body {
   color: var(--muted);
 }
 
-.trigger-list,
-.simple-list {
-  margin: 12px 0 0;
-  padding-left: 20px;
-}
-
-.trigger-list li,
-.simple-list li {
-  margin-bottom: 8px;
-  color: var(--text);
-}
-
-.trigger-author {
-  margin-top: 8px;
-  color: var(--accent);
-  font-size: 13px;
-}
-
-.card {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: #fff;
-  padding: 18px;
-  box-shadow: 0 10px 25px rgba(7, 21, 44, 0.1);
-}
-
-.card h3 {
-  margin-top: 0;
-  font-family: Sora, sans-serif;
-}
-
-.card p {
-  margin-bottom: 0;
-  color: var(--muted);
-}
-
-.panel-head h2 {
-  margin: 4px 0;
-  font-family: Sora, sans-serif;
-}
-
-.panel-head p {
-  margin-top: 6px;
-  color: var(--muted);
-}
-
-.profile-box,
-.event-form,
 .locations-grid,
 .events-list,
 .calendar-list,
@@ -296,54 +248,6 @@ body {
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(0, 174, 239, 0.08), rgba(0, 58, 82, 0.12));
   overflow: hidden;
-}
-
-.argentina-map svg {
-  width: 100%;
-  height: 520px;
-}
-
-.argentina-map path {
-  fill: rgba(255, 255, 255, 0.78);
-  stroke: rgba(0, 58, 82, 0.35);
-  stroke-width: 2;
-}
-
-.map-markers {
-  position: absolute;
-  inset: 0;
-}
-
-.map-marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(7, 21, 44, 0.2);
-}
-
-.marker-site {
-  background: #00aeef;
-}
-
-.marker-oficina {
-  background: #003a52;
-}
-
-.marker-campo {
-  background: #45d600;
-}
-
-.marker-planta {
-  background: #007fae;
 }
 
 .location-card {
@@ -574,8 +478,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .argentina-map,
-  .argentina-map svg {
+  .argentina-map {
     min-height: 420px;
     height: 420px;
   }
