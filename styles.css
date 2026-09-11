@@ -328,8 +328,9 @@ body {
 .experience-types {
   position: relative;
   z-index: 30;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -341,6 +342,7 @@ body {
   border-radius: 10px;
   background: linear-gradient(135deg, #ffffff, #eefaff);
   color: var(--navy);
+  width: min(320px, 100%);
   padding: 13px 14px;
   font-weight: 700;
   text-align: left;
@@ -352,8 +354,8 @@ body {
 .experience-tooltip {
   position: absolute;
   z-index: 10;
-  left: 0;
-  top: calc(100% + 8px);
+  left: calc(100% + 14px);
+  top: 50%;
   width: min(320px, 80vw);
   padding: 10px 12px;
   border-radius: 8px;
@@ -366,7 +368,7 @@ body {
   box-shadow: 0 12px 26px rgba(7, 21, 44, 0.22);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-4px);
+  transform: translateY(calc(-50% - 4px));
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
@@ -374,7 +376,7 @@ body {
 .experience-type-btn:focus-visible .experience-tooltip {
   z-index: 100;
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(-50%);
 }
 
 .training-form {
@@ -548,5 +550,16 @@ body {
 
   .row {
     grid-template-columns: 1fr;
+  }
+
+  .experience-tooltip {
+    left: 0;
+    top: calc(100% + 8px);
+    transform: translateY(-4px);
+  }
+
+  .experience-type-btn:hover .experience-tooltip,
+  .experience-type-btn:focus-visible .experience-tooltip {
+    transform: translateY(0);
   }
 }
