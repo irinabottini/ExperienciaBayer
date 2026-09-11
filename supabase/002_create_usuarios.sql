@@ -8,8 +8,9 @@ create extension if not exists pgcrypto;
 create table if not exists public.usuarios (
   id uuid primary key default gen_random_uuid(),
   auth_user_id uuid unique references auth.users(id) on delete set null,
+  cwid text unique,
   full_name text not null,
-  email text not null,
+  email text not null unique,
   role text not null default 'Visita' check (role in (
     'Administrador',
     'Lider',
@@ -18,8 +19,13 @@ create table if not exists public.usuarios (
     'Organizador',
     'Visita'
   )),
+  source_role text,
   team text,
   area text,
+  job_function text,
+  squad text,
+  ceco text,
+  major_account text,
   phone text,
   clothing_size text,
   dietary_condition text,
