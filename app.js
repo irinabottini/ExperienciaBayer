@@ -6,6 +6,22 @@ const cwidInput = document.getElementById("cwid-input");
 const loginMessage = document.getElementById("login-message");
 const requestUserButton = document.getElementById("request-user-btn");
 const requestUserMessage = document.getElementById("request-user-message");
+const editOwnProfileButton = document.getElementById("edit-own-profile-btn");
+const ownProfileForm = document.getElementById("own-profile-form");
+const ownProfileMessage = document.getElementById("own-profile-message");
+const adminUserTools = document.getElementById("admin-user-tools");
+const newUserForm = document.getElementById("new-user-form");
+const newUserMessage = document.getElementById("new-user-message");
+const adminEditUserForm = document.getElementById("admin-edit-user-form");
+const adminEditUserMessage = document.getElementById("admin-edit-user-message");
+const rolePermissions = {
+  Administrador: "Acceso completo a perfiles, usuarios, ubicaciones y eventos.",
+  Lider: "Visualiza toda la operación, sin modificar eventos ni usuarios.",
+  "Referente del site": "Administra su instalación y valida visitas a su site.",
+  "Referente por equipo": "Edita eventos propios y de su equipo.",
+  Organizador: "Crea y edita eventos, y puede gestionar usuarios.",
+  Visita: "Solo consulta la información habilitada."
+};
 
 const ROLES = {
   ADMIN: "Administrador",
@@ -105,11 +121,6 @@ function normalizeCwid(value) {
 }
 
 async function findUserByCwid(cwid) {
-  const localUser = users.find((user) => user.cwid === cwid);
-  if (localUser) {
-    return localUser;
-  }
-
   if (window.supabaseClient) {
     const { data, error } = await window.supabaseClient
       .from("usuarios")
@@ -135,7 +146,7 @@ async function findUserByCwid(cwid) {
     }
   }
 
-  return null;
+  return users.find((user) => user.cwid === cwid) ?? null;
 }
 
 function enterApp(user) {
@@ -414,6 +425,10 @@ function isAdminOrLeader(user) {
   return user.role === ROLES.ADMIN || user.role === ROLES.LIDER;
 }
 
+function canManageUsers(user) {
+  return user.role === ROLES.ADMIN || user.role === ROLES.ORG;
+}
+
 function getSiteById(siteId) {
   return locations.find((location) => location.id === siteId);
 }
@@ -501,8 +516,8 @@ function saveEvents(events) {
 }
 
 function openPanel(panelName) {
-  if (panelName === "usuarios" && !isAdminOrLeader(getActiveUser())) {
-    alert("Solo administradores y lideres pueden acceder a Usuarios App.");
+  if (panelName === "usuarios" && !canManageUsers(getActiveUser())) {
+    alert("Solo administradores y organizadores pueden gestionar Usuarios App.");
     return;
   }
 
@@ -708,24 +723,73 @@ function renderCalendar() {
 
 function renderUsersPanel() {
   const user = getActiveUser();
-  if (!isAdminOrLeader(user)) {
+  if (!canManageUsers(user)) {
     usersList.innerHTML = '<div class="event-item"><p>No tenes permisos para visualizar usuarios.</p></div>';
+    adminUserTools.hidden = true;
     return;
   }
+
+  adminUserTools.hidden = false;
 
   usersList.innerHTML = users
     .map(
       (item) => `
-      <div class="event-item">
+      <div class="event-item user-admin-item" data-user-id="${item.id}">
         <h4>${item.name}</h4>
+        <p><strong>CWID:</strong> ${item.cwid ?? "No informado"}</p>
         <p><strong>Email:</strong> ${item.email}</p>
         <p><strong>Rol:</strong> ${item.role}</p>
+        <p><strong>Permisos:</strong> ${rolePermissions[item.role] ?? "No definido"}</p>
         <p><strong>Site:</strong> ${getLocationName(item.siteId)}</p>
         <p><strong>Equipo:</strong> ${item.team}</p>
+        <button class="action-btn edit-user-btn" type="button" data-user-id="${item.id}">Editar usuario</button>
       </div>
     `
     )
     .join("");
+}
+
+function fillOwnProfileForm() {
+  const user = getActiveUser();
+  ownProfileForm.elements.full_name.value = user.name ?? "";
+  ownProfileForm.elements.phone.value = user.phone ?? "";
+  ownProfileForm.elements.clothing_size.value = user.talle ?? "";
+  ownProfileForm.elements.dietary_condition.value = user.condicionAlimenticia ?? "";
+  ownProfileForm.elements.favorite_companion.value = user.companeroFavorito ?? "";
+}
+
+async function updateUserInSupabase(userId, payload) {
+  if (!window.supabaseClient) {
+    return { error: new Error("Supabase no esta configurado.") };
+  }
+
+  const { data: authData } = await window.supabaseClient.auth.getUser();
+  if (!authData?.user) {
+    return { error: new Error("Necesitas iniciar sesion con Supabase Auth para guardar cambios.") };
+  }
+
+  const { data, error } = await window.supabaseClient
+    .from("usuarios")
+    .update(payload)
+    .eq("id", userId)
+    .select("*")
+    .single();
+
+  return { data, error };
+}
+
+function applySupabaseUserData(user, data) {
+  Object.assign(user, {
+    name: data.full_name,
+    email: data.email,
+    role: data.role,
+    siteId: data.primary_location_id,
+    team: data.team,
+    area: data.area,
+    phone: data.phone,
+    talle: data.clothing_size,
+    condicionAlimenticia: data.dietary_condition
+  });
 }
 
 function renderOrganizarAccess() {
@@ -763,7 +827,7 @@ function renderProfileSelector() {
 }
 
 function renderMenuAccess() {
-  menuUsuarios.hidden = !isAdminOrLeader(getActiveUser());
+  menuUsuarios.hidden = !canManageUsers(getActiveUser());
 }
 
 function rerenderAll() {
@@ -781,6 +845,137 @@ menuButtons.forEach((button) => {
   button.addEventListener("click", () => {
     openPanel(button.dataset.panel);
   });
+});
+
+editOwnProfileButton.addEventListener("click", () => {
+  fillOwnProfileForm();
+  ownProfileForm.hidden = false;
+});
+
+ownProfileForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const user = getActiveUser();
+  const formData = new FormData(ownProfileForm);
+  const payload = {
+    full_name: formData.get("full_name")?.toString().trim(),
+    phone: formData.get("phone")?.toString().trim() || null,
+    clothing_size: formData.get("clothing_size")?.toString().trim() || null,
+    dietary_condition: formData.get("dietary_condition")?.toString().trim() || null
+  };
+  ownProfileMessage.textContent = "Guardando perfil...";
+  const { data, error } = await updateUserInSupabase(user.id, payload);
+  if (error) {
+    ownProfileMessage.textContent = error.message;
+    return;
+  }
+  applySupabaseUserData(user, data);
+  ownProfileMessage.textContent = "Perfil actualizado en Supabase.";
+  renderProfile();
+});
+
+newUserForm.elements.role.innerHTML = Object.values(ROLES)
+  .map((role) => `<option value="${role}">${role}</option>`)
+  .join("");
+
+newUserForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!canManageUsers(getActiveUser())) {
+    return;
+  }
+  const formData = new FormData(newUserForm);
+  const payload = {
+    cwid: formData.get("cwid")?.toString().trim().toUpperCase(),
+    full_name: formData.get("full_name")?.toString().trim(),
+    email: formData.get("email")?.toString().trim().toLowerCase(),
+    role: formData.get("role")?.toString()
+  };
+  newUserMessage.textContent = "Guardando usuario...";
+  if (!window.supabaseClient) {
+    newUserMessage.textContent = "Supabase no esta configurado.";
+    return;
+  }
+  const { data, error } = await window.supabaseClient
+    .from("usuarios")
+    .insert(payload)
+    .select("*")
+    .single();
+  if (error) {
+    newUserMessage.textContent = error.message;
+    return;
+  }
+  users.push({
+    id: data.id,
+    cwid: data.cwid,
+    name: data.full_name,
+    email: data.email,
+    role: data.role,
+    siteId: data.primary_location_id,
+    team: data.team,
+    area: data.area,
+    phone: data.phone,
+    talle: data.clothing_size,
+    condicionAlimenticia: data.dietary_condition,
+    companeroFavorito: "No informado"
+  });
+  newUserForm.reset();
+  newUserMessage.textContent = "Usuario agregado en Supabase.";
+  renderUsersPanel();
+  renderProfileSelector();
+});
+
+usersList.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || !target.classList.contains("edit-user-btn")) {
+    return;
+  }
+  const user = users.find((item) => item.id === target.dataset.userId);
+  if (!user) {
+    return;
+  }
+  adminEditUserForm.elements.id.value = user.id;
+  adminEditUserForm.elements.cwid.value = user.cwid ?? "";
+  adminEditUserForm.elements.full_name.value = user.name ?? "";
+  adminEditUserForm.elements.email.value = user.email ?? "";
+  adminEditUserForm.elements.role.value = user.role ?? ROLES.VISITA;
+  adminEditUserForm.elements.team.value = user.team ?? "";
+  adminEditUserForm.elements.area.value = user.area ?? "";
+  adminEditUserForm.hidden = false;
+});
+
+adminEditUserForm.elements.role.innerHTML = Object.values(ROLES)
+  .map((role) => `<option value="${role}">${role}</option>`)
+  .join("");
+
+adminEditUserForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!canManageUsers(getActiveUser())) {
+    return;
+  }
+  const formData = new FormData(adminEditUserForm);
+  const user = users.find((item) => item.id === formData.get("id"));
+  if (!user) {
+    return;
+  }
+  const payload = {
+    cwid: formData.get("cwid")?.toString().trim().toUpperCase() || null,
+    full_name: formData.get("full_name")?.toString().trim(),
+    email: formData.get("email")?.toString().trim().toLowerCase(),
+    role: formData.get("role")?.toString(),
+    team: formData.get("team")?.toString().trim() || null,
+    area: formData.get("area")?.toString().trim() || null
+  };
+  adminEditUserMessage.textContent = "Guardando usuario...";
+  const { data, error } = await updateUserInSupabase(user.id, payload);
+  if (error) {
+    adminEditUserMessage.textContent = error.message;
+    return;
+  }
+  applySupabaseUserData(user, data);
+  user.cwid = data.cwid;
+  adminEditUserMessage.textContent = "Usuario actualizado en Supabase.";
+  renderUsersPanel();
+  renderProfileSelector();
+  renderProfile();
 });
 
 eventForm.addEventListener("submit", (event) => {

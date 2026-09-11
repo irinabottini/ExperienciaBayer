@@ -137,7 +137,23 @@
             <p><strong>Condicion alimenticia:</strong> <span id="profile-condicion-alimenticia"></span></p>
             <p><strong>Companero favorito:</strong> <span id="profile-companero-favorito"></span></p>
             <p><strong>Permisos:</strong> <span id="profile-permissions"></span></p>
+            <button class="action-btn" id="edit-own-profile-btn" type="button">Editar mi perfil</button>
           </div>
+
+          <form class="profile-box edit-user-form" id="own-profile-form" hidden>
+            <h3>Editar mi perfil</h3>
+            <div class="row">
+              <label>Nombre completo<input name="full_name" required /></label>
+              <label>Teléfono<input name="phone" /></label>
+            </div>
+            <div class="row">
+              <label>Talle<input name="clothing_size" /></label>
+              <label>Condición alimenticia<input name="dietary_condition" /></label>
+            </div>
+            <label>Compañero favorito<input name="favorite_companion" /></label>
+            <button class="primary-btn" type="submit">Guardar perfil</button>
+            <p class="form-message" id="own-profile-message" aria-live="polite"></p>
+          </form>
 
           <div class="profile-box" id="demo-role-box">
             <p><strong>Modo demo:</strong> cambiar usuario para validar permisos por rol.</p>
@@ -327,7 +343,51 @@
         <section class="panel" id="panel-usuarios">
           <div class="panel-head">
             <h2>Usuarios App</h2>
-            <p>Disponible solo para administradores y lideres.</p>
+            <p>Administradores y organizadores pueden gestionar usuarios. Cada persona puede editar su propio perfil.</p>
+          </div>
+          <div class="profile-box role-permissions-box">
+            <h3>Roles y permisos</h3>
+            <ul class="role-list">
+              <li><strong>Administrador:</strong> acceso completo, puede crear, editar y administrar usuarios.</li>
+              <li><strong>Líder:</strong> visualiza toda la operación, sin modificar eventos ni usuarios.</li>
+              <li><strong>Referente del site:</strong> administra su instalación y valida visitas a su site.</li>
+              <li><strong>Referente por equipo:</strong> edita eventos propios y de su equipo.</li>
+              <li><strong>Organizador:</strong> crea y edita eventos, y puede gestionar usuarios.</li>
+              <li><strong>Visita:</strong> solo consulta la información habilitada.</li>
+            </ul>
+          </div>
+          <div class="profile-box admin-user-tools" id="admin-user-tools" hidden>
+            <h3>Agregar usuario</h3>
+            <form id="new-user-form" class="edit-user-form">
+              <div class="row">
+                <label>CWID<input name="cwid" required /></label>
+                <label>Nombre completo<input name="full_name" required /></label>
+              </div>
+              <div class="row">
+                <label>Email<input name="email" type="email" required /></label>
+                <label>Rol<select name="role" required></select></label>
+              </div>
+              <button class="primary-btn" type="submit">Agregar usuario</button>
+              <p class="form-message" id="new-user-message" aria-live="polite"></p>
+            </form>
+            <h3>Editar usuario seleccionado</h3>
+            <form id="admin-edit-user-form" class="edit-user-form" hidden>
+              <input type="hidden" name="id" />
+              <div class="row">
+                <label>CWID<input name="cwid" required /></label>
+                <label>Nombre completo<input name="full_name" required /></label>
+              </div>
+              <div class="row">
+                <label>Email<input name="email" type="email" required /></label>
+                <label>Rol<select name="role" required></select></label>
+              </div>
+              <div class="row">
+                <label>Equipo<input name="team" /></label>
+                <label>Área<input name="area" /></label>
+              </div>
+              <button class="primary-btn" type="submit">Guardar usuario</button>
+              <p class="form-message" id="admin-edit-user-message" aria-live="polite"></p>
+            </form>
           </div>
           <div class="events-list" id="users-list"></div>
         </section>
