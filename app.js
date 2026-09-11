@@ -92,7 +92,7 @@ const users = [
 
 let activeUserId = users[0].id;
 
-const locations = [
+let locations = [
   {
     id: "zarate-i",
     name: "Zarate I",
@@ -297,6 +297,61 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 function getActiveUser() {
   return users.find((user) => user.id === activeUserId) ?? users[0];
+}
+
+function mapLocationFromSupabase(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    province: row.province ?? "Sin provincia",
+    locality: row.locality ?? "Sin localidad",
+    capacity: 0,
+    kind: getLocationKindFromType(row.location_type),
+    latitude: Number(row.latitude),
+    longitude: Number(row.longitude),
+    coordinateQuality: row.coordinate_quality ?? "Sin verificar",
+    managerEmail: "Sin asignar",
+    notes: row.notes ?? row.main_activity ?? "",
+    entity: row.entity,
+    status: row.status,
+    address: row.published_address,
+    googleMapsUrl: row.google_maps_url,
+    siteReferentUserId: row.site_referent_user_id
+  };
+}
+
+function getLocationKindFromType(type = "") {
+  const normalizedType = type.toLowerCase();
+  if (normalizedType.includes("planta")) {
+    return "planta";
+  }
+  if (normalizedType.includes("campo") || normalizedType.includes("i+d")) {
+    return "campo";
+  }
+  if (normalizedType.includes("oficina")) {
+    return "oficina";
+  }
+  return "site";
+}
+
+async function loadLocationsFromSupabase() {
+  if (!window.supabase || !window.supabaseClient) {
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient
+    .from("ubicaciones")
+    .select("*")
+    .order("source_id", { ascending: true });
+
+  if (error) {
+    console.warn("No se pudieron cargar las ubicaciones desde Supabase. Se usa el listado local.", error.message);
+    return;
+  }
+
+  if (data?.length) {
+    locations = data.map(mapLocationFromSupabase);
+  }
 }
 
 function isAdminOrLeader(user) {
@@ -802,5 +857,10 @@ experienceTypeButtons.forEach((button) => {
   });
 });
 
-renderProfileSelector();
-rerenderAll();
+async function initializeApp() {
+  await loadLocationsFromSupabase();
+  renderProfileSelector();
+  rerenderAll();
+}
+
+initializeApp();
