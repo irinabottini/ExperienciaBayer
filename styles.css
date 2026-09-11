@@ -326,6 +326,8 @@ body {
 }
 
 .experience-types {
+  position: relative;
+  z-index: 30;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
@@ -334,6 +336,7 @@ body {
 
 .experience-type-btn {
   position: relative;
+  z-index: 31;
   border: 1px solid #c7dce6;
   border-radius: 10px;
   background: linear-gradient(135deg, #ffffff, #eefaff);
@@ -369,6 +372,7 @@ body {
 
 .experience-type-btn:hover .experience-tooltip,
 .experience-type-btn:focus-visible .experience-tooltip {
+  z-index: 100;
   opacity: 1;
   transform: translateY(0);
 }
@@ -376,6 +380,10 @@ body {
 .training-form {
   padding: 0;
   margin-top: 12px;
+}
+
+#experience-config[hidden] {
+  display: none;
 }
 
 .experience-type-btn.active,

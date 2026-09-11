@@ -163,7 +163,7 @@
               Generacion de demanda
               <span class="experience-tooltip" role="tooltip">Encuentros con clientes en un unico lugar o en varias sedes, manteniendo el mismo grupo de participantes.</span>
             </button>
-            <button class="experience-type-btn active" data-experience="capacitacion" type="button">
+            <button class="experience-type-btn" data-experience="capacitacion" type="button">
               Jornadas de capacitacion
               <span class="experience-tooltip" role="tooltip">Jornadas para equipos internos, consultores, representantes de venta y canal Innova, en uno o varios dias y con una sede fija o itinerante.</span>
             </button>
@@ -185,8 +185,9 @@
             </button>
           </div>
 
-          <div class="access-note" id="organizar-access-note"></div>
-          <div class="experience-note" id="experience-note"></div>
+          <div id="experience-config" hidden>
+            <div class="access-note" id="organizar-access-note"></div>
+            <div class="experience-note" id="experience-note"></div>
 
           <div id="training-logic" class="profile-box" hidden>
             <h3>Configuracion de Jornada de Capacitacion</h3>
@@ -225,9 +226,9 @@
                 </label>
               </div>
             </div>
-          </div>
+            </div>
 
-          <form id="event-form" class="event-form">
+            <form id="event-form" class="event-form">
             <label>
               Instalacion principal
               <select name="location" id="event-location" required></select>
@@ -277,7 +278,8 @@
 
             <button type="submit" class="primary-btn">Guardar evento</button>
             <p id="form-message" aria-live="polite"></p>
-          </form>
+            </form>
+          </div>
         </section>
 
         <section class="panel" id="panel-eventos">

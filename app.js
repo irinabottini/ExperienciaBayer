@@ -252,7 +252,7 @@ const experienceDescriptions = {
   internacionales: "Jornadas destinadas a agroespecialistas premiados por su acompanamiento y contribucion al trabajo de Bayer."
 };
 
-let selectedExperience = "capacitacion";
+let selectedExperience = null;
 
 const menuButtons = document.querySelectorAll(".menu-btn");
 const panels = document.querySelectorAll(".panel");
@@ -283,6 +283,7 @@ const eventsScopeCopy = document.getElementById("events-scope-copy");
 const usersList = document.getElementById("users-list");
 const organizarAccessNote = document.getElementById("organizar-access-note");
 const experienceNote = document.getElementById("experience-note");
+const experienceConfig = document.getElementById("experience-config");
 const trainingLogicBox = document.getElementById("training-logic");
 const menuUsuarios = document.getElementById("menu-usuarios");
 const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
@@ -619,7 +620,17 @@ function renderUsersPanel() {
 function renderOrganizarAccess() {
   const user = getActiveUser();
   const allowed = canCreateEvents(user);
-  eventForm.style.display = allowed ? "grid" : "none";
+  const hasSelectedExperience = Boolean(selectedExperience);
+  experienceConfig.hidden = !hasSelectedExperience;
+  eventForm.style.display = allowed && hasSelectedExperience ? "grid" : "none";
+
+  if (!hasSelectedExperience) {
+    organizarAccessNote.textContent = "Selecciona un tipo de experiencia para comenzar a crear el evento.";
+    experienceNote.textContent = "Cada tipo de experiencia muestra una configuracion distinta.";
+    trainingLogicBox.hidden = true;
+    return;
+  }
+
   organizarAccessNote.textContent = allowed
     ? "Este modulo esta disponible para tu rol."
     : "Tu rol es Visita: no podes organizar eventos porque no tenes rol operativo en sistema.";
