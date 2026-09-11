@@ -1,4 +1,11 @@
 const STORAGE_KEY_EVENTS = "experiencia-bayer-events";
+const accessScreen = document.getElementById("access-screen");
+const appShell = document.getElementById("app-shell");
+const loginForm = document.getElementById("login-form");
+const cwidInput = document.getElementById("cwid-input");
+const loginMessage = document.getElementById("login-message");
+const requestUserButton = document.getElementById("request-user-btn");
+const requestUserMessage = document.getElementById("request-user-message");
 
 const ROLES = {
   ADMIN: "Administrador",
@@ -12,6 +19,7 @@ const ROLES = {
 const users = [
   {
     id: "u1",
+    cwid: "GMERQ",
     name: "Irina Bottini",
     email: "irina@bayer.com",
     role: ROLES.ADMIN,
@@ -91,6 +99,54 @@ const users = [
 ];
 
 let activeUserId = users[0].id;
+
+function normalizeCwid(value) {
+  return value.trim().toUpperCase();
+}
+
+async function findUserByCwid(cwid) {
+  const localUser = users.find((user) => user.cwid === cwid);
+  if (localUser) {
+    return localUser;
+  }
+
+  if (window.supabaseClient) {
+    const { data, error } = await window.supabaseClient
+      .from("usuarios")
+      .select("id, cwid, full_name, email, role, primary_location_id, team, area, phone, clothing_size, dietary_condition")
+      .eq("cwid", cwid)
+      .maybeSingle();
+
+    if (!error && data) {
+      return {
+        id: data.id,
+        cwid: data.cwid,
+        name: data.full_name,
+        email: data.email,
+        role: data.role,
+        siteId: data.primary_location_id,
+        team: data.team ?? "No informado",
+        area: data.area ?? "No informado",
+        phone: data.phone ?? "No informado",
+        talle: data.clothing_size ?? "No informado",
+        condicionAlimenticia: data.dietary_condition ?? "No informado",
+        companeroFavorito: "No informado"
+      };
+    }
+  }
+
+  return null;
+}
+
+function enterApp(user) {
+  activeUserId = user.id;
+  if (!users.some((item) => item.id === user.id)) {
+    users.push(user);
+  }
+  accessScreen.hidden = true;
+  appShell.hidden = false;
+  initializeApp();
+}
 
 let locations = [
   {
@@ -857,10 +913,27 @@ experienceTypeButtons.forEach((button) => {
   });
 });
 
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const cwid = normalizeCwid(cwidInput.value);
+  loginMessage.textContent = "Verificando usuario...";
+
+  const user = await findUserByCwid(cwid);
+  if (!user) {
+    loginMessage.textContent = "No encontramos ese CWID. Verifica el dato o solicita un usuario.";
+    return;
+  }
+
+  loginMessage.textContent = "";
+  enterApp(user);
+});
+
+requestUserButton.addEventListener("click", () => {
+  requestUserMessage.textContent = "La solicitud de usuario se habilitara en una proxima etapa. Contacta al administrador de la plataforma.";
+});
+
 async function initializeApp() {
   await loadLocationsFromSupabase();
   renderProfileSelector();
   rerenderAll();
 }
-
-initializeApp();
