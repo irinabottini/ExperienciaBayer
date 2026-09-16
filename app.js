@@ -589,6 +589,82 @@ function saveEvents(events) {
   localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
 }
 
+function mapSupabaseEvent(row) {
+  const eventData = row.datos ?? {};
+  return {
+    ...eventData,
+    id: row.id,
+    title: row.asunto,
+    subject: row.asunto,
+    objective: row.objetivo,
+    location: row.instalacion_id,
+    date: row.inicio?.slice(0, 10),
+    startDate: row.inicio?.slice(0, 10),
+    startTime: row.inicio?.slice(11, 16),
+    endDate: row.fin?.slice(0, 10),
+    endTime: row.fin?.slice(11, 16),
+    guests: row.invitados,
+    ownerEmail: row.creador_email,
+    experienceType: row.tipo_experiencia,
+    status: row.estado
+  };
+}
+
+async function loadEventsFromSupabase() {
+  if (!window.supabaseClient) {
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient
+    .from("eventos")
+    .select("*")
+    .order("inicio", { ascending: true });
+
+  if (error) {
+    console.warn("No se pudieron cargar los eventos desde Supabase. Se usa el respaldo local.", error.message);
+    return;
+  }
+
+  const remoteEvents = (data ?? []).map(mapSupabaseEvent);
+  const localEvents = getEvents();
+  const remoteIds = new Set(remoteEvents.map((event) => event.id));
+  saveEvents([...remoteEvents, ...localEvents.filter((event) => !remoteIds.has(event.id))]);
+}
+
+async function saveEventToSupabase(eventData, user) {
+  if (!window.supabaseClient) {
+    return { error: new Error("Supabase no esta configurado.") };
+  }
+
+  const start = eventData.startDate || eventData.date;
+  const end = eventData.endDate || eventData.startDate || eventData.date;
+  const startTime = eventData.startTime || "00:00";
+  const endTime = eventData.endTime || startTime;
+  const payload = {
+    id: eventData.id,
+    instalacion_id: eventData.location,
+    creador_usuario_id: /^[0-9a-f-]{36}$/i.test(user.id ?? "") ? user.id : null,
+    creador_email: user.email,
+    tipo_experiencia: eventData.experienceType || "general",
+    asunto: eventData.subject || eventData.title || "Sin asunto",
+    tema: eventData.topic || null,
+    objetivo: eventData.objective || null,
+    inicio: `${start}T${startTime}:00`,
+    fin: `${end}T${endTime}:00`,
+    invitados: Number(eventData.guests) || null,
+    estado: eventData.status || "Borrador",
+    datos: eventData
+  };
+
+  const { data, error } = await window.supabaseClient
+    .from("eventos")
+    .upsert(payload, { onConflict: "id" })
+    .select("*")
+    .single();
+
+  return { data, error };
+}
+
 function openPanel(panelName) {
   if (panelName === "usuarios" && !canManageUsers(getActiveUser())) {
     alert("Solo administradores y organizadores pueden gestionar Usuarios App.");
@@ -1107,7 +1183,7 @@ adminEditUserForm.addEventListener("submit", async (event) => {
   renderProfile();
 });
 
-eventForm.addEventListener("submit", (event) => {
+eventForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const user = getActiveUser();
@@ -1147,7 +1223,13 @@ eventForm.addEventListener("submit", (event) => {
   events.push(eventData);
   saveEvents(events);
 
-  formMessage.textContent = "Evento guardado correctamente.";
+  formMessage.textContent = "Guardando evento...";
+  const { error } = await saveEventToSupabase(eventData, user);
+  if (error) {
+    formMessage.textContent = `Guardado localmente. Supabase: ${error.message}`;
+  } else {
+    formMessage.textContent = "Evento guardado en Supabase.";
+  }
   eventForm.reset();
 
   renderEventsPanel();
@@ -1266,6 +1348,7 @@ requestUserButton.addEventListener("click", () => {
 
 async function initializeApp() {
   await loadLocationsFromSupabase();
+  await loadEventsFromSupabase();
   renderProfileSelector();
   rerenderAll();
 }
