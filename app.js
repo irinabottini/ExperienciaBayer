@@ -950,6 +950,7 @@ function renderEventsPanel() {
     item.className = "event-item";
     item.innerHTML = `
       <h4>${event.subject || event.title || "Sin asunto"} - ${event.topic || experienceLabels[event.experienceType] || "General"}</h4>
+      <span class="event-status status-${(event.status || "Pendiente").toLowerCase()}">${event.status || "Pendiente"}</span>
       <p><strong>Lugar:</strong> ${getLocationName(event.location)}</p>
       <p><strong>Fecha:</strong> ${formatDate(event.startDate || event.date)} - ${formatDate(event.endDate || event.startDate || event.date)}</p>
       <p><strong>Creador:</strong> ${owner ? owner.name : event.ownerEmail}</p>
@@ -1375,7 +1376,7 @@ eventForm.addEventListener("submit", async (event) => {
     ownerEmail: user.email,
     team: user.team,
     experienceType: selectedExperience,
-    status: "Borrador"
+    status: formData.get("eventStatus")?.toString() || "Pendiente"
   };
 
   const events = getEvents();

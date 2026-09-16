@@ -800,6 +800,37 @@ body {
   padding: 14px 18px;
 }
 
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  padding: 14px;
+}
+
+.event-item {
+  position: relative;
+  min-height: 170px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(7, 21, 44, 0.08);
+}
+
+.event-status {
+  display: inline-block;
+  margin: 6px 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.status-pendiente { background: #d28a00; }
+.status-activo { background: #168a8a; }
+.status-finalizado { background: #52707b; }
+.status-cancelado { background: #b33c4a; }
+
 .event-item:last-child,
 .calendar-item:last-child {
   border-bottom: none;
@@ -839,6 +870,17 @@ body {
 .calendar-filter {
   padding: 14px;
   margin-bottom: 12px;
+}
+
+.calendar-filter summary {
+  cursor: pointer;
+  color: var(--navy);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.calendar-filter select {
+  margin-top: 10px;
 }
 
 .calendar-layout {

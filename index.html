@@ -63,7 +63,7 @@
             </span>
             Nueva Experiencia
           </button>
-          <button class="menu-btn" data-panel="eventos">MIS EVENTOS</button>
+          <button class="menu-btn" data-panel="eventos">Mis Eventos</button>
           <button class="menu-btn" data-panel="calendario">Calendario Global</button>
           <button class="menu-btn" data-panel="usuarios" id="menu-usuarios">Usuarios App</button>
         </nav>
@@ -288,6 +288,7 @@
                 <input id="organizer-search" type="search" placeholder="Buscar por nombre, CWID o email" autocomplete="off" />
                 <div id="organizer-options" class="organizer-options"></div>
               </div>
+              <label>Status<select name="eventStatus"><option value="Pendiente">Pendiente</option><option value="Activo">Activo</option><option value="Finalizado">Finalizado</option><option value="Cancelado">Cancelado</option></select></label>
             </div>
             </div>
 
@@ -353,7 +354,7 @@
 
         <section class="panel" id="panel-eventos">
           <div class="panel-head">
-            <h2>MIS EVENTOS</h2>
+            <h2>Mis Eventos</h2>
             <p id="events-scope-copy"></p>
           </div>
           <div id="events-list" class="events-list"></div>
@@ -371,19 +372,19 @@
                 <h3 id="calendar-month-label"></h3>
                 <button class="action-btn" id="calendar-next" type="button" aria-label="Mes siguiente">→</button>
               </div>
-              <div id="calendar-legend" class="calendar-legend"></div>
               <div id="calendar-list" class="calendar-list"></div>
+              <div id="calendar-legend" class="calendar-legend"></div>
             </div>
             <aside class="calendar-sidebar" aria-label="Filtros del calendario">
               <h3>Filtros</h3>
-              <div class="calendar-filter">
-                <label for="calendar-location">Instalaciones</label>
-                <select id="calendar-location" multiple size="6" aria-label="Filtrar por instalaciones"></select>
-              </div>
-              <div class="calendar-filter">
-                <label for="calendar-experience-type">Tipo de evento</label>
+              <details class="calendar-filter" open>
+                <summary>Instalaciones</summary>
+                <select id="calendar-location" multiple aria-label="Filtrar por instalaciones"></select>
+              </details>
+              <details class="calendar-filter">
+                <summary>Tipo de evento</summary>
                 <select id="calendar-experience-type" aria-label="Filtrar por tipo de evento"></select>
-              </div>
+              </details>
             </aside>
           </div>
         </section>
