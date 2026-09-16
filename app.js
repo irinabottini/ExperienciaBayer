@@ -128,7 +128,11 @@ async function findUserByCwid(cwid) {
       .eq("cwid", cwid)
       .maybeSingle();
 
-    if (!error && data) {
+    if (error) {
+      return { error: `Supabase no pudo consultar public.usuarios: ${error.message}` };
+    }
+
+    if (data) {
       return {
         id: data.id,
         cwid: data.cwid,
@@ -146,7 +150,8 @@ async function findUserByCwid(cwid) {
     }
   }
 
-  return users.find((user) => user.cwid === cwid) ?? null;
+  const localUser = users.find((user) => user.cwid === cwid);
+  return localUser ?? { error: "Supabase no esta disponible y no hay un usuario demo para este CWID." };
 }
 
 function enterApp(user) {
@@ -355,12 +360,16 @@ const trainingLogicBox = document.getElementById("training-logic");
 const menuUsuarios = document.getElementById("menu-usuarios");
 const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
 const mapLegend = document.getElementById("map-legend");
-const locationMap = L.map("location-map").setView([-34.2, -62.5], 6);
-const locationMarkers = L.layerGroup().addTo(locationMap);
+const locationMap = window.L
+  ? L.map("location-map").setView([-34.2, -62.5], 6)
+  : null;
+const locationMarkers = locationMap ? L.layerGroup().addTo(locationMap) : null;
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(locationMap);
+if (locationMap) {
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(locationMap);
+}
 
 function getActiveUser() {
   return users.find((user) => user.id === activeUserId) ?? users[0];
@@ -548,6 +557,10 @@ function renderProfile() {
 function renderLocations() {
   const user = getActiveUser();
   locationsGrid.innerHTML = "";
+  if (!locationMap || !locationMarkers) {
+    mapLegend.textContent = "El mapa no esta disponible en este momento.";
+    return;
+  }
   locationMarkers.clearLayers();
 
   locations.forEach((location) => {
@@ -1113,9 +1126,15 @@ loginForm.addEventListener("submit", async (event) => {
   const cwid = normalizeCwid(cwidInput.value);
   loginMessage.textContent = "Verificando usuario...";
 
-  const user = await findUserByCwid(cwid);
+  const result = await findUserByCwid(cwid);
+  if (result?.error) {
+    loginMessage.textContent = result.error;
+    return;
+  }
+
+  const user = result;
   if (!user) {
-    loginMessage.textContent = "No encontramos ese CWID. Verifica el dato o solicita un usuario.";
+    loginMessage.textContent = "No encontramos ese CWID en public.usuarios. Verifica el dato o solicita un usuario.";
     return;
   }
 
