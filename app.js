@@ -425,6 +425,8 @@ const eventGuestsField = document.getElementById("event-guests-field");
 const eventGuestsLabel = document.getElementById("event-guests-label");
 const eventFoodField = document.getElementById("event-food-field");
 const eventOptionsField = document.getElementById("event-options-field");
+const organizerSearch = document.getElementById("organizer-search");
+const organizerOptions = document.getElementById("organizer-options");
 const genericEventFields = document.getElementById("generic-event-fields");
 const trainingTopic = document.getElementById("training-topic");
 const trainingPrimaryLocation = document.getElementById("training-primary-location");
@@ -503,8 +505,36 @@ async function loadLocationsFromSupabase() {
   }
 
   if (data?.length) {
-    locations = data.map(mapLocationFromSupabase);
+    locations = data.map(mapLocationFromSupabase).sort((a, b) => a.name.localeCompare(b.name, "es"));
   }
+}
+
+async function loadUsersFromSupabase() {
+  if (!window.supabaseClient) return;
+  const { data, error } = await window.supabaseClient
+    .from("usuarios")
+    .select("id, cwid, full_name, email, role, primary_location_id, team, area, phone, clothing_size, dietary_condition")
+    .order("full_name", { ascending: true });
+  if (error || !data?.length) return;
+  data.forEach((row) => {
+    const existing = users.find((user) => user.id === row.id || user.email === row.email);
+    const mapped = {
+      id: row.id,
+      cwid: row.cwid,
+      name: row.full_name,
+      email: row.email,
+      role: row.role,
+      siteId: row.primary_location_id,
+      team: row.team ?? "No informado",
+      area: row.area ?? "No informado",
+      phone: row.phone ?? "No informado",
+      talle: row.clothing_size ?? "No informado",
+      condicionAlimenticia: row.dietary_condition ?? "No informado",
+      companeroFavorito: "No informado"
+    };
+    if (existing) Object.assign(existing, mapped);
+    else users.push(mapped);
+  });
 }
 
 const fallbackSpacesByLocation = {
@@ -833,10 +863,10 @@ function renderLocationOptions() {
   calendarLocationSelect.innerHTML = '<option value="all" selected>Mostrar todo</option>';
   calendarExperienceTypeSelect.innerHTML = '<option value="all">Mostrar todo</option>';
 
-  locations.forEach((location) => {
+  [...locations].sort((a, b) => a.name.localeCompare(b.name, "es")).forEach((location) => {
     const option = document.createElement("option");
     option.value = location.id;
-    option.textContent = `${location.name} (${location.province})`;
+    option.textContent = `${location.name} (${location.locality || "Ciudad no informada"}, ${location.province || "Provincia no informada"})`;
 
     eventLocationSelect.appendChild(option.cloneNode(true));
     trainingPrimaryLocationSelect.appendChild(option.cloneNode(true));
@@ -849,6 +879,20 @@ function renderLocationOptions() {
     option.textContent = label;
     calendarExperienceTypeSelect.appendChild(option);
   });
+}
+
+function renderOrganizerOptions() {
+  if (!organizerOptions) return;
+  const query = organizerSearch.value.trim().toLowerCase();
+  const currentUser = getActiveUser();
+  const selected = new Set([...eventForm.querySelectorAll('input[name="organizerEmails"]:checked')].map((input) => input.value));
+  const matches = users
+    .filter((user) => user.id !== currentUser.id && user.cwid !== currentUser.cwid && user.email !== currentUser.email)
+    .filter((user) => `${user.name} ${user.cwid ?? ""} ${user.email}`.toLowerCase().includes(query))
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+  organizerOptions.innerHTML = matches.length
+    ? matches.map((user) => `<label><input name="organizerEmails" type="checkbox" value="${escapeHtml(user.email)}" ${selected.has(user.email) ? "checked" : ""} /> <span>${escapeHtml(user.name)}${user.cwid ? ` (${escapeHtml(user.cwid)})` : ""}</span></label>`).join("")
+    : '<p class="organizer-empty">No se encontraron usuarios.</p>';
 }
 
 function formatDate(dateString) {
@@ -1102,6 +1146,7 @@ function renderOrganizarAccess() {
   if (selectedExperience === "capacitacion") {
     renderTrainingSpaces();
     renderTrainingFoodOptions();
+    renderOrganizerOptions();
   }
 }
 
@@ -1310,7 +1355,9 @@ eventForm.addEventListener("submit", async (event) => {
     trainingAudience: formData.get("trainingAudience")?.toString() || null,
     trainingDays: formData.get("trainingDays")?.toString() || null,
     trainingModality: formData.get("trainingModality")?.toString() || null,
-    organizerEmails: (formData.get("organizerEmails") || formData.get("genericOrganizerEmails"))?.toString().split(/[;,\n]+/).map((email) => email.trim().toLowerCase()).filter(Boolean) || [],
+    organizerEmails: formData.getAll("organizerEmails").map((email) => email.toString().trim().toLowerCase()).filter(Boolean).length
+      ? formData.getAll("organizerEmails").map((email) => email.toString().trim().toLowerCase()).filter(Boolean)
+      : (formData.get("genericOrganizerEmails")?.toString().split(/[;,\n]+/).map((email) => email.trim().toLowerCase()).filter(Boolean) || []),
     trainingDetails: selectedExperience === "capacitacion" ? {
       topic: formData.get("topic")?.toString() || null,
       subject: formData.get("subject")?.toString() || null,
@@ -1397,6 +1444,8 @@ calendarNextButton.addEventListener("click", () => {
   renderCalendar();
 });
 
+organizerSearch?.addEventListener("input", renderOrganizerOptions);
+
 trainingPrimaryLocation.addEventListener("change", renderTrainingSpaces);
 [trainingStartDate, trainingEndDate, trainingStartTime, trainingEndTime].forEach((input) => input.addEventListener("change", renderTrainingFoodOptions));
 eventForm.querySelectorAll('input[name="foodService"]').forEach((input) => input.addEventListener("change", renderTrainingFoodOptions));
@@ -1476,7 +1525,9 @@ requestUserButton.addEventListener("click", () => {
 
 async function initializeApp() {
   await loadLocationsFromSupabase();
+  await loadUsersFromSupabase();
   await loadEventsFromSupabase();
   renderProfileSelector();
+  renderOrganizerOptions();
   rerenderAll();
 }

@@ -283,7 +283,11 @@
                 <label>Modalidad<select name="trainingModality"><option value="presencial">Presencial</option><option value="hibrida">Hibrida</option><option value="virtual">Virtual</option></select></label>
               </div>
               <label>Mails de invitados<textarea name="guestEmails" id="training-guest-emails" rows="5" placeholder="Pega los mails separados por coma, punto y coma o salto de linea"></textarea></label>
-              <label>Organizadores adicionales<textarea name="organizerEmails" id="training-organizer-emails" rows="2" placeholder="Mails de quienes también podrán modificar este evento"></textarea></label>
+              <div class="organizer-picker">
+                <label for="organizer-search">Organizadores adicionales</label>
+                <input id="organizer-search" type="search" placeholder="Buscar por nombre, CWID o email" autocomplete="off" />
+                <div id="organizer-options" class="organizer-options"></div>
+              </div>
             </div>
             </div>
 
