@@ -401,6 +401,7 @@ const eventForm = document.getElementById("event-form");
 const eventLocationSelect = document.getElementById("event-location");
 const trainingPrimaryLocationSelect = document.getElementById("training-primary-location");
 const calendarLocationSelect = document.getElementById("calendar-location");
+const calendarExperienceTypeSelect = document.getElementById("calendar-experience-type");
 const calendarPreviousButton = document.getElementById("calendar-previous");
 const calendarNextButton = document.getElementById("calendar-next");
 const calendarMonthLabel = document.getElementById("calendar-month-label");
@@ -825,7 +826,8 @@ function renderMapLegend() {
 function renderLocationOptions() {
   eventLocationSelect.innerHTML = "";
   trainingPrimaryLocationSelect.innerHTML = '<option value="">Elegir instalacion</option>';
-  calendarLocationSelect.innerHTML = "";
+  calendarLocationSelect.innerHTML = '<option value="all" selected>Mostrar todo</option>';
+  calendarExperienceTypeSelect.innerHTML = '<option value="all">Mostrar todo</option>';
 
   locations.forEach((location) => {
     const option = document.createElement("option");
@@ -834,9 +836,14 @@ function renderLocationOptions() {
 
     eventLocationSelect.appendChild(option.cloneNode(true));
     trainingPrimaryLocationSelect.appendChild(option.cloneNode(true));
-    const calendarOption = option.cloneNode(true);
-    calendarOption.selected = true;
-    calendarLocationSelect.appendChild(calendarOption);
+    calendarLocationSelect.appendChild(option.cloneNode(true));
+  });
+
+  Object.entries(experienceLabels).forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    calendarExperienceTypeSelect.appendChild(option);
   });
 }
 
@@ -914,7 +921,10 @@ function renderEventsPanel() {
 function renderCalendar() {
   const events = getEvents();
   const user = getActiveUser();
-  const selectedLocations = new Set([...calendarLocationSelect.selectedOptions].map((option) => option.value));
+  const selectedLocationValues = [...calendarLocationSelect.selectedOptions].map((option) => option.value);
+  const showAllLocations = selectedLocationValues.includes("all") || selectedLocationValues.length === 0;
+  const selectedLocations = new Set(selectedLocationValues);
+  const selectedType = calendarExperienceTypeSelect.value;
   const year = calendarMonth.getFullYear();
   const month = calendarMonth.getMonth();
   const firstDay = new Date(year, month, 1);
@@ -925,7 +935,7 @@ function renderCalendar() {
 
   calendarMonthLabel.textContent = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
   calendarLegend.innerHTML = locations
-    .filter((location) => selectedLocations.has(location.id))
+    .filter((location) => showAllLocations || selectedLocations.has(location.id))
     .map((location) => `<span class="calendar-legend-item"><i style="background:${getLocationColor(location.id)}"></i>${location.name}</span>`)
     .join("");
 
@@ -933,7 +943,8 @@ function renderCalendar() {
 
   const filtered = events
     .filter((event) => canSeeEvent(user, event))
-    .filter((event) => selectedLocations.has(event.location))
+    .filter((event) => showAllLocations || selectedLocations.has(event.location))
+    .filter((event) => selectedType === "all" || event.experienceType === selectedType)
     .filter((event) => getEventDateValue(event))
     .filter((event) => {
       const eventDate = getEventDateValue(event);
@@ -1366,7 +1377,16 @@ eventsList.addEventListener("click", (event) => {
   }
 });
 
-calendarLocationSelect.addEventListener("change", renderCalendar);
+calendarLocationSelect.addEventListener("change", () => {
+  const selected = [...calendarLocationSelect.selectedOptions].map((option) => option.value);
+  if (selected.length > 1 && selected.includes("all")) {
+    calendarLocationSelect.querySelector('option[value="all"]').selected = false;
+  } else if (selected.length === 0) {
+    calendarLocationSelect.querySelector('option[value="all"]').selected = true;
+  }
+  renderCalendar();
+});
+calendarExperienceTypeSelect.addEventListener("change", renderCalendar);
 calendarPreviousButton.addEventListener("click", () => {
   calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1);
   renderCalendar();

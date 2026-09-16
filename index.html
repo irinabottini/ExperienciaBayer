@@ -229,48 +229,60 @@
           <form id="event-form" class="event-form">
           <div id="training-logic" class="profile-box" hidden>
             <div class="event-form training-form">
-              <div class="row">
-                <label>Eje tematico<select name="topic" id="training-topic" required><option value="">Seleccionar</option><option>Cereales</option><option>Maiz</option><option>Soja</option><option>Camelina</option><option>Sistemas</option><option>Varios</option></select></label>
-                <label>Asunto<input name="subject" id="training-subject" type="text" placeholder="Asunto del evento" required /></label>
+              <h3 class="form-section-title">Informacion basica</h3>
+              <div class="training-basic-grid">
+                <div class="training-basic-stack">
+                  <label>Eje tematico<select name="topic" id="training-topic" required><option value="">Seleccionar</option><option>Cereales</option><option>Maiz</option><option>Soja</option><option>Camelina</option><option>Sistemas</option><option>Varios</option></select></label>
+                  <label>Asunto<input name="subject" id="training-subject" type="text" placeholder="Asunto del evento" required /></label>
+                </div>
+                <label>Objetivo del evento<textarea name="trainingObjective" id="training-objective" rows="5" placeholder="Breve descripcion para contextualizar, por ejemplo publico objetivo."></textarea></label>
               </div>
-              <label>Objetivo del evento<textarea name="trainingObjective" id="training-objective" rows="4" placeholder="Breve descripcion para contextualizar, por ejemplo publico objetivo."></textarea></label>
-              <div class="row">
-                <label>Fecha de inicio<input name="startDate" id="training-start-date" type="date" required /></label>
-                <label>Hora de inicio<input name="startTime" id="training-start-time" type="time" value="08:00" required /></label>
+
+              <div class="training-schedule-grid">
+                <div>
+                  <h3 class="form-section-title">Fechas y horarios</h3>
+                  <div class="row">
+                    <label>Fecha de inicio<input name="startDate" id="training-start-date" type="date" required /></label>
+                    <label>Hora de inicio<input name="startTime" id="training-start-time" type="time" value="08:00" required /></label>
+                  </div>
+                  <div class="row">
+                    <label>Fecha de fin<input name="endDate" id="training-end-date" type="date" required /></label>
+                    <label>Hora de fin<input name="endTime" id="training-end-time" type="time" value="09:00" required /></label>
+                  </div>
+                </div>
+                <fieldset class="confirmation-card">
+                  <legend>Fecha limite de confirmacion</legend>
+                  <label><input name="confirmationLimit" type="radio" value="Si" /> Quiero</label>
+                  <label><input name="confirmationLimit" type="radio" value="No" checked /> No quiero</label>
+                  <label id="confirmation-days-wrap" hidden>Dias antes<input name="confirmationDaysBefore" type="number" min="1" /></label>
+                </fieldset>
               </div>
-              <div class="row">
-                <label>Fecha de fin<input name="endDate" id="training-end-date" type="date" required /></label>
-                <label>Hora de fin<input name="endTime" id="training-end-time" type="time" value="09:00" required /></label>
-              </div>
-              <fieldset>
-                <legend>Fecha limite de confirmacion</legend>
-                <label><input name="confirmationLimit" type="radio" value="Si" /> Quiero</label>
-                <label><input name="confirmationLimit" type="radio" value="No" checked /> No quiero</label>
-                <label id="confirmation-days-wrap" hidden>Dias antes<input name="confirmationDaysBefore" type="number" min="1" /></label>
-              </fieldset>
+
+              <h3 class="form-section-title">Logistica del evento</h3>
               <label>Instalacion<select name="trainingPrimaryLocation" id="training-primary-location" required><option value="">Elegir instalacion</option></select></label>
-              <fieldset>
+              <fieldset class="white-form-card">
                 <legend>Espacio dentro de la instalacion</legend>
                 <div id="training-spaces" class="check-grid"></div>
                 <label>Equipamiento o aclaraciones<textarea name="spaceEquipment" rows="3" placeholder="Audio, maquinaria, rotafolio u otra necesidad puntual."></textarea></label>
               </fieldset>
-              <fieldset>
+              <fieldset class="white-form-card">
                 <legend>Necesito servicio de comida</legend>
                 <label><input name="foodService" type="radio" value="Si" /> Si</label>
                 <label><input name="foodService" type="radio" value="No" checked /> No</label>
                 <div id="training-food-options" class="check-grid" hidden></div>
                 <div id="training-food-by-day" class="day-food-list" hidden></div>
               </fieldset>
-              <fieldset>
+              <fieldset class="white-form-card">
                 <legend>Solicito feedback</legend>
                 <label><input name="feedback" type="radio" value="Si" /> Si</label>
                 <label><input name="feedback" type="radio" value="No" checked /> No</label>
               </fieldset>
-              <label>Mails de invitados<textarea name="guestEmails" id="training-guest-emails" rows="5" placeholder="Pega los mails separados por coma, punto y coma o salto de linea"></textarea></label>
+              <h3 class="form-section-title">Invitados</h3>
               <div class="row">
                 <label>Publico objetivo<select name="trainingAudience" id="training-audience"><option value="internos">Internos</option><option value="consultores">Consultores</option><option value="rv">Representantes de venta</option><option value="innova">Canal Innova</option><option value="mixto">Publico mixto</option></select></label>
                 <label>Modalidad<select name="trainingModality"><option value="presencial">Presencial</option><option value="hibrida">Hibrida</option><option value="virtual">Virtual</option></select></label>
               </div>
+              <label>Mails de invitados<textarea name="guestEmails" id="training-guest-emails" rows="5" placeholder="Pega los mails separados por coma, punto y coma o salto de linea"></textarea></label>
             </div>
             </div>
 
@@ -342,18 +354,28 @@
             <h2>Calendario Global</h2>
           </div>
 
-          <div class="calendar-filter">
-            <label for="calendar-location">Instalaciones visibles</label>
-            <select id="calendar-location" multiple size="4" aria-label="Filtrar por instalaciones"></select>
+          <div class="calendar-layout">
+            <div class="calendar-main">
+              <div class="calendar-toolbar">
+                <button class="action-btn" id="calendar-previous" type="button" aria-label="Mes anterior">←</button>
+                <h3 id="calendar-month-label"></h3>
+                <button class="action-btn" id="calendar-next" type="button" aria-label="Mes siguiente">→</button>
+              </div>
+              <div id="calendar-legend" class="calendar-legend"></div>
+              <div id="calendar-list" class="calendar-list"></div>
+            </div>
+            <aside class="calendar-sidebar" aria-label="Filtros del calendario">
+              <h3>Filtros</h3>
+              <div class="calendar-filter">
+                <label for="calendar-location">Instalaciones</label>
+                <select id="calendar-location" multiple size="6" aria-label="Filtrar por instalaciones"></select>
+              </div>
+              <div class="calendar-filter">
+                <label for="calendar-experience-type">Tipo de evento</label>
+                <select id="calendar-experience-type" aria-label="Filtrar por tipo de evento"></select>
+              </div>
+            </aside>
           </div>
-
-          <div class="calendar-toolbar">
-            <button class="action-btn" id="calendar-previous" type="button" aria-label="Mes anterior">←</button>
-            <h3 id="calendar-month-label"></h3>
-            <button class="action-btn" id="calendar-next" type="button" aria-label="Mes siguiente">→</button>
-          </div>
-          <div id="calendar-legend" class="calendar-legend"></div>
-          <div id="calendar-list" class="calendar-list"></div>
         </section>
 
         <section class="panel" id="panel-usuarios">
