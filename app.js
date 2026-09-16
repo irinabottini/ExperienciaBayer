@@ -1087,23 +1087,6 @@ locationsGrid.addEventListener("click", (event) => {
   alert(`Edicion habilitada para ${location.name}. Proximo paso: abrir modal de edicion.`);
 });
 
-mapMarkers.addEventListener("click", (event) => {
-  const target = event.target;
-  if (!(target instanceof HTMLElement)) {
-    return;
-  }
-
-  const id = target.dataset.id;
-  if (!id) {
-    return;
-  }
-
-  const locationCard = locationsGrid.querySelector(`[data-location-id="${id}"]`);
-  if (locationCard) {
-    locationCard.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-});
-
 profileSelector.addEventListener("change", () => {
   activeUserId = profileSelector.value;
   rerenderAll();
