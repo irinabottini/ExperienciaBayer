@@ -401,13 +401,16 @@ const eventForm = document.getElementById("event-form");
 const eventLocationSelect = document.getElementById("event-location");
 const trainingPrimaryLocationSelect = document.getElementById("training-primary-location");
 const calendarLocationSelect = document.getElementById("calendar-location");
+const calendarPreviousButton = document.getElementById("calendar-previous");
+const calendarNextButton = document.getElementById("calendar-next");
+const calendarMonthLabel = document.getElementById("calendar-month-label");
+const calendarLegend = document.getElementById("calendar-legend");
 const formMessage = document.getElementById("form-message");
 const eventsList = document.getElementById("events-list");
 const calendarList = document.getElementById("calendar-list");
 const profileSelector = document.getElementById("profile-selector");
 const eventsScopeCopy = document.getElementById("events-scope-copy");
 const usersList = document.getElementById("users-list");
-const organizarAccessNote = document.getElementById("organizar-access-note");
 const experienceNote = document.getElementById("experience-note");
 const experienceConfig = document.getElementById("experience-config");
 const trainingLogicBox = document.getElementById("training-logic");
@@ -416,14 +419,12 @@ const experienceTypes = document.getElementById("experience-types");
 const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
 const mapLegend = document.getElementById("map-legend");
 const changeExperienceButton = document.getElementById("change-experience-btn");
-const experienceFormKicker = document.getElementById("experience-form-kicker");
-const experienceFormTitle = document.getElementById("experience-form-title");
-const experienceFormDescription = document.getElementById("experience-form-description");
 const eventObjectiveField = document.getElementById("event-objective-field");
 const eventGuestsField = document.getElementById("event-guests-field");
 const eventGuestsLabel = document.getElementById("event-guests-label");
 const eventFoodField = document.getElementById("event-food-field");
 const eventOptionsField = document.getElementById("event-options-field");
+let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 const locationMap = window.L
   ? L.map("location-map").setView([-34.2, -62.5], 6)
   : null;
@@ -685,7 +686,7 @@ function renderMapLegend() {
 function renderLocationOptions() {
   eventLocationSelect.innerHTML = "";
   trainingPrimaryLocationSelect.innerHTML = '<option value="">Elegir instalacion</option>';
-  calendarLocationSelect.innerHTML = '<option value="all">Todos los sites</option>';
+  calendarLocationSelect.innerHTML = "";
 
   locations.forEach((location) => {
     const option = document.createElement("option");
@@ -694,7 +695,9 @@ function renderLocationOptions() {
 
     eventLocationSelect.appendChild(option.cloneNode(true));
     trainingPrimaryLocationSelect.appendChild(option.cloneNode(true));
-    calendarLocationSelect.appendChild(option);
+    const calendarOption = option.cloneNode(true);
+    calendarOption.selected = true;
+    calendarLocationSelect.appendChild(calendarOption);
   });
 }
 
@@ -770,33 +773,81 @@ function renderEventsPanel() {
 }
 
 function renderCalendar() {
-  const filter = calendarLocationSelect.value;
   const events = getEvents();
   const user = getActiveUser();
+  const selectedLocations = new Set([...calendarLocationSelect.selectedOptions].map((option) => option.value));
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = lastDay.getDate();
+  const monthLabel = calendarMonth.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+
+  calendarMonthLabel.textContent = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
+  calendarLegend.innerHTML = locations
+    .filter((location) => selectedLocations.has(location.id))
+    .map((location) => `<span class="calendar-legend-item"><i style="background:${getLocationColor(location.id)}"></i>${location.name}</span>`)
+    .join("");
 
   calendarList.innerHTML = "";
 
   const filtered = events
     .filter((event) => canSeeEvent(user, event))
-    .filter((event) => (filter === "all" ? true : event.location === filter))
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .filter((event) => selectedLocations.has(event.location))
+    .filter((event) => getEventDateValue(event))
+    .filter((event) => {
+      const eventDate = getEventDateValue(event);
+      return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+    })
+    .sort((a, b) => getEventDateValue(a) - getEventDateValue(b));
 
-  if (filtered.length === 0) {
-    calendarList.innerHTML = '<div class="calendar-item"><p>No hay eventos para ese filtro.</p></div>';
-    return;
+  const cells = [];
+  for (let index = 0; index < startOffset + daysInMonth; index += 1) {
+    const day = index - startOffset + 1;
+    if (day < 1 || day > daysInMonth) {
+      cells.push('<div class="calendar-day calendar-day-empty" aria-hidden="true"></div>');
+      continue;
+    }
+    const dayEvents = filtered.filter((event) => getEventDateValue(event).getDate() === day);
+    const eventMarkup = dayEvents.map((event) => `
+      <article class="calendar-event" style="--event-color:${getLocationColor(event.location)}">
+        <strong>${escapeHtml(formatEventTime(event))}</strong>
+        <span>${escapeHtml(event.subject || event.title || "Sin asunto")}</span>
+        <small>${escapeHtml(experienceLabels[event.experienceType] ?? event.topic ?? "General")}</small>
+      </article>
+    `).join("");
+    cells.push(`<div class="calendar-day"><strong class="calendar-day-number">${day}</strong>${eventMarkup || '<span class="calendar-empty-copy">Sin eventos</span>'}</div>`);
   }
 
-  filtered.forEach((event) => {
-    const item = document.createElement("div");
-    item.className = "calendar-item";
-    item.innerHTML = `
-      <h4>${event.title}</h4>
-      <p><strong>${formatDate(event.date)}</strong> - ${getLocationName(event.location)}</p>
-      <p>${experienceLabels[event.experienceType] ?? "General"}</p>
-      <p>${event.guests} invitados</p>
-    `;
-    calendarList.appendChild(item);
-  });
+  calendarList.innerHTML = `
+    <div class="calendar-weekdays">${["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"].map((day) => `<strong>${day}</strong>`).join("")}</div>
+    <div class="calendar-grid">${cells.join("")}</div>
+  `;
+}
+
+function getLocationColor(locationId) {
+  const index = Math.max(0, locations.findIndex((location) => location.id === locationId));
+  const colors = ["#007fae", "#e07a00", "#6b4bb8", "#2f8300", "#c43d70", "#168a8a", "#8b5e34"];
+  return colors[index % colors.length];
+}
+
+function getEventDateValue(event) {
+  const date = event.startDate || event.date;
+  if (!date) return null;
+  return new Date(`${date}T${event.startTime || "00:00"}`);
+}
+
+function formatEventTime(event) {
+  const start = event.startTime || "Todo el dia";
+  const end = event.endTime ? ` - ${event.endTime}` : "";
+  return `${start}${end}`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+  }[character]));
 }
 
 function renderUsersPanel() {
@@ -877,23 +928,14 @@ function renderOrganizarAccess() {
   const formConfig = experienceFormConfigs[selectedExperience] ?? experienceFormConfigs.field_tour;
   experienceConfig.hidden = !hasSelectedExperience;
   experienceTypes.hidden = hasSelectedExperience;
+  changeExperienceButton.hidden = !hasSelectedExperience;
   eventForm.style.display = allowed && hasSelectedExperience ? "grid" : "none";
 
   if (!hasSelectedExperience) {
-    organizarAccessNote.textContent = "Selecciona un tipo de experiencia para comenzar a crear el evento.";
-    experienceNote.textContent = "Cada tipo de experiencia muestra una configuracion distinta.";
     trainingLogicBox.hidden = true;
     return;
   }
 
-  organizarAccessNote.textContent = allowed
-    ? "Este modulo esta disponible para tu rol."
-    : "Tu rol es Visita: no podes organizar eventos porque no tenes rol operativo en sistema.";
-
-  experienceNote.textContent = `${experienceLabels[selectedExperience]}: ${experienceDescriptions[selectedExperience]}`;
-  experienceFormKicker.textContent = formConfig.kicker;
-  experienceFormTitle.textContent = experienceLabels[selectedExperience];
-  experienceFormDescription.textContent = experienceDescriptions[selectedExperience];
   eventObjectiveField.querySelector("textarea").placeholder = formConfig.objectivePlaceholder;
   eventGuestsLabel.textContent = formConfig.guestsLabel;
   eventFoodField.hidden = !formConfig.foodVisible;
@@ -1078,9 +1120,14 @@ eventForm.addEventListener("submit", (event) => {
   const eventData = {
     id: crypto.randomUUID(),
     title: formData.get("title")?.toString().trim(),
+    subject: formData.get("subject")?.toString().trim() || formData.get("title")?.toString().trim(),
     objective: formData.get("objective")?.toString().trim(),
     location: formData.get("location")?.toString(),
     date: formData.get("date")?.toString(),
+    startDate: formData.get("startDate")?.toString() || formData.get("date")?.toString(),
+    startTime: formData.get("startTime")?.toString() || null,
+    endDate: formData.get("endDate")?.toString() || null,
+    endTime: formData.get("endTime")?.toString() || null,
     guests: formData.get("guests")?.toString(),
     food: formData.get("food")?.toString().trim(),
     notes: formData.get("notes")?.toString().trim(),
@@ -1138,6 +1185,14 @@ eventsList.addEventListener("click", (event) => {
 });
 
 calendarLocationSelect.addEventListener("change", renderCalendar);
+calendarPreviousButton.addEventListener("click", () => {
+  calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1);
+  renderCalendar();
+});
+calendarNextButton.addEventListener("click", () => {
+  calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1);
+  renderCalendar();
+});
 
 locationsGrid.addEventListener("click", (event) => {
   const target = event.target;

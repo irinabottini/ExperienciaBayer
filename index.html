@@ -188,8 +188,8 @@
 
         <section class="panel" id="panel-nueva-experiencia">
           <div class="panel-head">
+            <button id="change-experience-btn" class="back-btn" type="button" hidden aria-label="Volver a tipos de experiencia">←</button>
             <h2>Nueva Experiencia</h2>
-            <p>Carga minima para calendarizar objetivo, lugar y logistica.</p>
           </div>
 
           <div class="experience-types" id="experience-types">
@@ -224,20 +224,9 @@
           </div>
 
           <div id="experience-config" hidden>
-            <button id="change-experience-btn" class="back-btn" type="button">Volver a tipos de experiencia</button>
-            <div class="experience-form-head">
-              <p class="eyebrow" id="experience-form-kicker">Formulario de experiencia</p>
-              <h3 id="experience-form-title"></h3>
-              <p id="experience-form-description"></p>
-            </div>
-            <div class="access-note" id="organizar-access-note"></div>
             <div class="experience-note" id="experience-note" hidden></div>
 
           <div id="training-logic" class="profile-box" hidden>
-            <h3>Configuracion de Jornada de Capacitacion</h3>
-            <p>
-              Defini la sede principal y las caracteristicas de la jornada para organizar convocatoria, contenido y seguimiento.
-            </p>
             <div class="event-form training-form">
               <label>
                 Instalacion principal
@@ -337,16 +326,19 @@
         <section class="panel" id="panel-calendario">
           <div class="panel-head">
             <h2>Calendario Global</h2>
-            <p>Filtra eventos por site para visualizar actividad consolidada.</p>
           </div>
 
           <div class="calendar-filter">
-            <label for="calendar-location">Filtrar por ubicacion</label>
-            <select id="calendar-location">
-              <option value="all">Todos los sites</option>
-            </select>
+            <label for="calendar-location">Instalaciones visibles</label>
+            <select id="calendar-location" multiple size="4" aria-label="Filtrar por instalaciones"></select>
           </div>
 
+          <div class="calendar-toolbar">
+            <button class="action-btn" id="calendar-previous" type="button" aria-label="Mes anterior">←</button>
+            <h3 id="calendar-month-label"></h3>
+            <button class="action-btn" id="calendar-next" type="button" aria-label="Mes siguiente">→</button>
+          </div>
+          <div id="calendar-legend" class="calendar-legend"></div>
           <div id="calendar-list" class="calendar-list"></div>
         </section>
 
