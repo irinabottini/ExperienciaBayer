@@ -63,7 +63,7 @@
             </span>
             Nueva Experiencia
           </button>
-          <button class="menu-btn" data-panel="eventos">Eventos Creados</button>
+          <button class="menu-btn" data-panel="eventos">MIS EVENTOS</button>
           <button class="menu-btn" data-panel="calendario">Calendario Global</button>
           <button class="menu-btn" data-panel="usuarios" id="menu-usuarios">Usuarios App</button>
         </nav>
@@ -243,11 +243,11 @@
                   <h3 class="form-section-title">Fechas y horarios</h3>
                   <div class="row">
                     <label>Fecha de inicio<input name="startDate" id="training-start-date" type="date" required /></label>
-                    <label>Hora de inicio<input name="startTime" id="training-start-time" type="time" value="08:00" required /></label>
+                    <label>Hora de inicio<input name="startTime" id="training-start-time" type="time" step="1800" value="08:00" required /></label>
                   </div>
                   <div class="row">
                     <label>Fecha de fin<input name="endDate" id="training-end-date" type="date" required /></label>
-                    <label>Hora de fin<input name="endTime" id="training-end-time" type="time" value="09:00" required /></label>
+                    <label>Hora de fin<input name="endTime" id="training-end-time" type="time" step="1800" value="09:00" required /></label>
                   </div>
                 </div>
                 <fieldset class="confirmation-card">
@@ -283,6 +283,7 @@
                 <label>Modalidad<select name="trainingModality"><option value="presencial">Presencial</option><option value="hibrida">Hibrida</option><option value="virtual">Virtual</option></select></label>
               </div>
               <label>Mails de invitados<textarea name="guestEmails" id="training-guest-emails" rows="5" placeholder="Pega los mails separados por coma, punto y coma o salto de linea"></textarea></label>
+              <label>Organizadores adicionales<textarea name="organizerEmails" id="training-organizer-emails" rows="2" placeholder="Mails de quienes también podrán modificar este evento"></textarea></label>
             </div>
             </div>
 
@@ -323,6 +324,11 @@
               <textarea name="notes" rows="2" placeholder="Necesidades tecnicas, transporte, etc."></textarea>
             </label>
 
+            <label>
+              Organizadores adicionales
+              <textarea name="genericOrganizerEmails" rows="2" placeholder="Mails de quienes también podrán modificar este evento"></textarea>
+            </label>
+
             <div class="row" id="event-options-field">
               <label id="feedback-option">
                 <input name="needsFeedback" type="checkbox" />
@@ -343,7 +349,7 @@
 
         <section class="panel" id="panel-eventos">
           <div class="panel-head">
-            <h2>Eventos Creados</h2>
+            <h2>MIS EVENTOS</h2>
             <p id="events-scope-copy"></p>
           </div>
           <div id="events-list" class="events-list"></div>

@@ -603,6 +603,12 @@ function canEditLocation(user, location) {
 }
 
 function canEditEvent(user, event) {
+  const assignedOrganizer = (event.organizerEmails ?? [])
+    .map((email) => email.toLowerCase())
+    .includes(user.email.toLowerCase());
+  if (assignedOrganizer) {
+    return true;
+  }
   if (user.role === ROLES.ADMIN) {
     return true;
   }
@@ -619,7 +625,6 @@ function canEditEvent(user, event) {
   if (user.role === ROLES.ORG) {
     return event.ownerEmail === user.email;
   }
-
   return false;
 }
 
@@ -638,10 +643,9 @@ function canSeeEvent(user, event) {
     return event.ownerEmail === user.email || (owner && owner.team === user.team);
   }
   if (user.role === ROLES.ORG) {
-    return event.ownerEmail === user.email;
+    return event.ownerEmail === user.email || (event.organizerEmails ?? []).includes(user.email.toLowerCase());
   }
-
-  return false;
+  return (event.organizerEmails ?? []).includes(user.email.toLowerCase());
 }
 
 function getEvents() {
@@ -893,7 +897,7 @@ function renderEventsPanel() {
     return;
   }
 
-  const sorted = [...visibleEvents].sort((a, b) => a.date.localeCompare(b.date));
+  const sorted = [...visibleEvents].sort((a, b) => (a.startDate || a.date || "").localeCompare(b.startDate || b.date || ""));
 
   sorted.forEach((event) => {
     const editable = canEditEvent(user, event);
@@ -901,14 +905,10 @@ function renderEventsPanel() {
     const item = document.createElement("div");
     item.className = "event-item";
     item.innerHTML = `
-      <h4>${event.title}</h4>
-      <p><strong>Fecha:</strong> ${formatDate(event.date)}</p>
+      <h4>${event.subject || event.title || "Sin asunto"} - ${event.topic || experienceLabels[event.experienceType] || "General"}</h4>
       <p><strong>Lugar:</strong> ${getLocationName(event.location)}</p>
-      <p><strong>Objetivo:</strong> ${event.objective}</p>
-      <p><strong>Invitados:</strong> ${event.guests}</p>
-      <p><strong>Experiencia:</strong> ${experienceLabels[event.experienceType] ?? "General"}</p>
+      <p><strong>Fecha:</strong> ${formatDate(event.startDate || event.date)} - ${formatDate(event.endDate || event.startDate || event.date)}</p>
       <p><strong>Creador:</strong> ${owner ? owner.name : event.ownerEmail}</p>
-      <p><strong>Feedback:</strong> ${event.needsFeedback ? "Si" : "No"} | <strong>Assessment:</strong> ${event.needsAssessment ? "Si" : "No"}</p>
       <div class="event-actions">
         <button class="action-btn" type="button" data-action="edit" data-id="${event.id}" ${editable ? "" : "disabled"}>Editar</button>
         <button class="action-btn" type="button" data-action="mail" data-id="${event.id}">Disparar mail</button>
@@ -1310,6 +1310,7 @@ eventForm.addEventListener("submit", async (event) => {
     trainingAudience: formData.get("trainingAudience")?.toString() || null,
     trainingDays: formData.get("trainingDays")?.toString() || null,
     trainingModality: formData.get("trainingModality")?.toString() || null,
+    organizerEmails: (formData.get("organizerEmails") || formData.get("genericOrganizerEmails"))?.toString().split(/[;,\n]+/).map((email) => email.trim().toLowerCase()).filter(Boolean) || [],
     trainingDetails: selectedExperience === "capacitacion" ? {
       topic: formData.get("topic")?.toString() || null,
       subject: formData.get("subject")?.toString() || null,
