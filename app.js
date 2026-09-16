@@ -6,6 +6,7 @@ const cwidInput = document.getElementById("cwid-input");
 const loginMessage = document.getElementById("login-message");
 const requestUserButton = document.getElementById("request-user-btn");
 const requestUserMessage = document.getElementById("request-user-message");
+const demoUserStatus = document.getElementById("demo-user-status");
 const editOwnProfileButton = document.getElementById("edit-own-profile-btn");
 const ownProfileForm = document.getElementById("own-profile-form");
 const ownProfileMessage = document.getElementById("own-profile-message");
@@ -156,6 +157,7 @@ async function findUserByCwid(cwid) {
 
 function enterApp(user) {
   activeUserId = user.id;
+  demoUserStatus.textContent = `${user.name} · ${user.role}`;
   if (!users.some((item) => item.id === user.id)) {
     users.push(user);
   }
@@ -324,6 +326,58 @@ const experienceDescriptions = {
   internacionales: "Jornadas destinadas a agroespecialistas premiados por su acompanamiento y contribucion al trabajo de Bayer."
 };
 
+const experienceFormConfigs = {
+  field_tour: {
+    kicker: "Recorrido de campo",
+    objectivePlaceholder: "Que queremos observar o aprender en territorio",
+    guestsLabel: "Participantes",
+    foodVisible: true,
+    optionsVisible: true
+  },
+  generacion: {
+    kicker: "Relacion con clientes",
+    objectivePlaceholder: "Que oportunidad comercial o relacion queremos desarrollar",
+    guestsLabel: "Clientes invitados",
+    foodVisible: true,
+    optionsVisible: true
+  },
+  capacitacion: {
+    kicker: "Jornada de aprendizaje",
+    objectivePlaceholder: "Que competencias o contenidos queremos desarrollar",
+    guestsLabel: "Participantes",
+    foodVisible: true,
+    optionsVisible: true
+  },
+  licencias: {
+    kicker: "Relacion institucional",
+    objectivePlaceholder: "Que actividad necesitamos coordinar con la empresa externa",
+    guestsLabel: "Invitados externos",
+    foodVisible: true,
+    optionsVisible: false
+  },
+  eventos_bayer: {
+    kicker: "Evento de gran escala",
+    objectivePlaceholder: "Que experiencia queremos producir y para que audiencia",
+    guestsLabel: "Invitados (minimo 100)",
+    foodVisible: true,
+    optionsVisible: true
+  },
+  visitas_site: {
+    kicker: "Recorrido de instalacion",
+    objectivePlaceholder: "Que queremos mostrar del site y cual es el objetivo de la visita",
+    guestsLabel: "Visitantes",
+    foodVisible: false,
+    optionsVisible: false
+  },
+  internacionales: {
+    kicker: "Experiencia de reconocimiento",
+    objectivePlaceholder: "Que queremos lograr con la experiencia internacional",
+    guestsLabel: "Agroespecialistas",
+    foodVisible: true,
+    optionsVisible: true
+  }
+};
+
 let selectedExperience = null;
 
 const menuButtons = document.querySelectorAll(".menu-btn");
@@ -358,8 +412,18 @@ const experienceNote = document.getElementById("experience-note");
 const experienceConfig = document.getElementById("experience-config");
 const trainingLogicBox = document.getElementById("training-logic");
 const menuUsuarios = document.getElementById("menu-usuarios");
+const experienceTypes = document.getElementById("experience-types");
 const experienceTypeButtons = document.querySelectorAll(".experience-type-btn");
 const mapLegend = document.getElementById("map-legend");
+const changeExperienceButton = document.getElementById("change-experience-btn");
+const experienceFormKicker = document.getElementById("experience-form-kicker");
+const experienceFormTitle = document.getElementById("experience-form-title");
+const experienceFormDescription = document.getElementById("experience-form-description");
+const eventObjectiveField = document.getElementById("event-objective-field");
+const eventGuestsField = document.getElementById("event-guests-field");
+const eventGuestsLabel = document.getElementById("event-guests-label");
+const eventFoodField = document.getElementById("event-food-field");
+const eventOptionsField = document.getElementById("event-options-field");
 const locationMap = window.L
   ? L.map("location-map").setView([-34.2, -62.5], 6)
   : null;
@@ -541,6 +605,7 @@ function openPanel(panelName) {
 
 function renderProfile() {
   const user = getActiveUser();
+  demoUserStatus.textContent = `${user.name} · ${user.role}`;
   profileNodes.name.textContent = user.name;
   profileNodes.email.textContent = user.email;
   profileNodes.role.textContent = user.role;
@@ -809,7 +874,9 @@ function renderOrganizarAccess() {
   const user = getActiveUser();
   const allowed = canCreateEvents(user);
   const hasSelectedExperience = Boolean(selectedExperience);
+  const formConfig = experienceFormConfigs[selectedExperience] ?? experienceFormConfigs.field_tour;
   experienceConfig.hidden = !hasSelectedExperience;
+  experienceTypes.hidden = hasSelectedExperience;
   eventForm.style.display = allowed && hasSelectedExperience ? "grid" : "none";
 
   if (!hasSelectedExperience) {
@@ -824,6 +891,13 @@ function renderOrganizarAccess() {
     : "Tu rol es Visita: no podes organizar eventos porque no tenes rol operativo en sistema.";
 
   experienceNote.textContent = `${experienceLabels[selectedExperience]}: ${experienceDescriptions[selectedExperience]}`;
+  experienceFormKicker.textContent = formConfig.kicker;
+  experienceFormTitle.textContent = experienceLabels[selectedExperience];
+  experienceFormDescription.textContent = experienceDescriptions[selectedExperience];
+  eventObjectiveField.querySelector("textarea").placeholder = formConfig.objectivePlaceholder;
+  eventGuestsLabel.textContent = formConfig.guestsLabel;
+  eventFoodField.hidden = !formConfig.foodVisible;
+  eventOptionsField.hidden = !formConfig.optionsVisible;
   trainingLogicBox.hidden = selectedExperience !== "capacitacion";
 }
 
@@ -1102,6 +1176,12 @@ experienceTypeButtons.forEach((button) => {
     renderOrganizarAccess();
     openPanel("nueva-experiencia");
   });
+});
+
+changeExperienceButton.addEventListener("click", () => {
+  selectedExperience = null;
+  experienceTypeButtons.forEach((button) => button.classList.remove("active"));
+  renderOrganizarAccess();
 });
 
 loginForm.addEventListener("submit", async (event) => {

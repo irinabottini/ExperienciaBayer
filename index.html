@@ -31,7 +31,7 @@
         <p class="access-copy">Ingresá con tu CWID para acceder a la gestión de experiencias y sites.</p>
         <form id="login-form" class="access-form">
           <label for="cwid-input">CWID</label>
-          <input id="cwid-input" name="cwid" type="text" placeholder="Ej: GMERQ" autocomplete="username" required />
+          <input id="cwid-input" name="cwid" type="text" placeholder="CWID" autocomplete="username" required />
           <button class="primary-btn" type="submit">Ingresar</button>
           <p id="login-message" class="access-message" aria-live="polite"></p>
         </form>
@@ -70,6 +70,10 @@
       </aside>
 
       <main class="content">
+        <div class="demo-status" aria-label="Estado de sesión">
+          <span class="demo-status-badge">Modo Demo</span>
+          <span id="demo-user-status">Usuario activo</span>
+        </div>
         <section class="panel active" id="panel-inicio">
           <div class="hero">
             <p class="pill">Nuevo portal interno</p>
@@ -220,8 +224,14 @@
           </div>
 
           <div id="experience-config" hidden>
+            <button id="change-experience-btn" class="back-btn" type="button">Volver a tipos de experiencia</button>
+            <div class="experience-form-head">
+              <p class="eyebrow" id="experience-form-kicker">Formulario de experiencia</p>
+              <h3 id="experience-form-title"></h3>
+              <p id="experience-form-description"></p>
+            </div>
             <div class="access-note" id="organizar-access-note"></div>
-            <div class="experience-note" id="experience-note"></div>
+            <div class="experience-note" id="experience-note" hidden></div>
 
           <div id="training-logic" class="profile-box" hidden>
             <h3>Configuracion de Jornada de Capacitacion</h3>
@@ -263,48 +273,48 @@
             </div>
 
             <form id="event-form" class="event-form">
-            <label>
+            <label id="event-location-field">
               Instalacion principal
               <select name="location" id="event-location" required></select>
             </label>
 
-            <label>
+            <label id="event-title-field">
               Titulo del evento
               <input name="title" type="text" placeholder="Ej: Jornada de Innovacion" required />
             </label>
 
-            <label>
+            <label id="event-objective-field">
               Objetivo
               <textarea name="objective" rows="3" placeholder="Que queremos lograr" required></textarea>
             </label>
 
             <div class="row">
-              <label>
+              <label id="event-date-field">
                 Fecha
                 <input name="date" type="date" required />
               </label>
-              <label>
-                Invitados
+              <label id="event-guests-field">
+                <span id="event-guests-label">Invitados</span>
                 <input name="guests" type="number" min="1" placeholder="0" required />
               </label>
             </div>
 
-            <label>
+            <label id="event-food-field">
               Comida y catering
               <input name="food" type="text" placeholder="Coffee break, almuerzo, etc." />
             </label>
 
-            <label>
+            <label id="event-notes-field">
               Notas adicionales
               <textarea name="notes" rows="2" placeholder="Necesidades tecnicas, transporte, etc."></textarea>
             </label>
 
-            <div class="row">
-              <label>
+            <div class="row" id="event-options-field">
+              <label id="feedback-option">
                 <input name="needsFeedback" type="checkbox" />
                 Requiere feedback
               </label>
-              <label>
+              <label id="assessment-option">
                 <input name="needsAssessment" type="checkbox" />
                 Requiere assessment
               </label>
