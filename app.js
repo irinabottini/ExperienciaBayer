@@ -424,6 +424,17 @@ const eventGuestsField = document.getElementById("event-guests-field");
 const eventGuestsLabel = document.getElementById("event-guests-label");
 const eventFoodField = document.getElementById("event-food-field");
 const eventOptionsField = document.getElementById("event-options-field");
+const genericEventFields = document.getElementById("generic-event-fields");
+const trainingTopic = document.getElementById("training-topic");
+const trainingPrimaryLocation = document.getElementById("training-primary-location");
+const trainingSpaces = document.getElementById("training-spaces");
+const trainingFoodOptions = document.getElementById("training-food-options");
+const trainingFoodByDay = document.getElementById("training-food-by-day");
+const confirmationDaysWrap = document.getElementById("confirmation-days-wrap");
+const trainingStartDate = document.getElementById("training-start-date");
+const trainingEndDate = document.getElementById("training-end-date");
+const trainingStartTime = document.getElementById("training-start-time");
+const trainingEndTime = document.getElementById("training-end-time");
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 const locationMap = window.L
   ? L.map("location-map").setView([-34.2, -62.5], 6)
@@ -493,6 +504,58 @@ async function loadLocationsFromSupabase() {
   if (data?.length) {
     locations = data.map(mapLocationFromSupabase);
   }
+}
+
+const fallbackSpacesByLocation = {
+  "Campus Bayer": [
+    { name: "Espacio a campo", capacity: "Adaptable", equipment: "Apoyo logistico y audio" },
+    { name: "Domo", capacity: "Adaptable", equipment: "Livings y sectores de descanso" },
+    { name: "Salita", capacity: "20", equipment: "Mobiliario para reuniones" },
+    { name: "Preceoneta", capacity: "40", equipment: "Unidad movil y apoyo audiovisual" },
+    { name: "Auditorio", capacity: "90", equipment: "Audio y proyeccion" },
+    { name: "Espacio de almuerzo al aire libre", capacity: "Adaptable", equipment: "Mesas y servicio de comida" },
+    { name: "Sin espacio definido", capacity: "-", equipment: "-" }
+  ]
+};
+
+function renderTrainingSpaces() {
+  if (!trainingSpaces || !trainingPrimaryLocation) return;
+  const location = locations.find((item) => item.id === trainingPrimaryLocation.value);
+  const options = fallbackSpacesByLocation[location?.name] ?? [{ name: "Sin espacio definido", capacity: "-", equipment: "-" }];
+  trainingSpaces.innerHTML = options.map((space) => `
+    <label title="Capacidad: ${space.capacity}. Equipamiento: ${space.equipment}">
+      <input name="spaces" type="checkbox" value="${escapeHtml(space.name)}" />
+      ${escapeHtml(space.name)}
+    </label>
+  `).join("");
+}
+
+function getTrainingDates() {
+  if (!trainingStartDate?.value || !trainingEndDate?.value) return [];
+  const dates = [];
+  const cursor = new Date(`${trainingStartDate.value}T00:00:00`);
+  const end = new Date(`${trainingEndDate.value}T00:00:00`);
+  while (cursor <= end) {
+    dates.push(cursor.toISOString().slice(0, 10));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}
+
+function renderTrainingFoodOptions() {
+  if (!trainingFoodOptions || !trainingFoodByDay) return;
+  const wantsFood = eventForm.querySelector('input[name="foodService"]:checked')?.value === "Si";
+  const dates = getTrainingDates();
+  trainingFoodOptions.hidden = !wantsFood || dates.length > 1;
+  trainingFoodByDay.hidden = !wantsFood || dates.length <= 1;
+  const durationHours = trainingStartDate?.value && trainingEndDate?.value && trainingStartTime?.value && trainingEndTime?.value
+    ? (new Date(`${trainingEndDate.value}T${trainingEndTime.value}`) - new Date(`${trainingStartDate.value}T${trainingStartTime.value}`)) / 36e5
+    : 0;
+  const options = durationHours <= 4 ? ["Coffee"] : ["Coffee + almuerzo", "Coffee 1 + almuerzo + coffee 2"];
+  trainingFoodOptions.innerHTML = options.map((option, index) => `<label><input name="foodServiceDetail" type="radio" value="${option}" ${index === 0 ? "checked" : ""} /> ${option}</label>`).join("");
+  trainingFoodByDay.innerHTML = dates.map((date) => `
+    <fieldset><legend>${date}</legend>${["Coffee", "Coffee + almuerzo", "Coffee 1 + almuerzo + coffee 2"].map((option, index) => `<label><input name="foodDay_${date}" type="radio" value="${option}" ${index === 0 ? "checked" : ""} /> ${option}</label>`).join("")}</fieldset>
+  `).join("");
 }
 
 function isAdminOrLeader(user) {
@@ -1006,6 +1069,15 @@ function renderOrganizarAccess() {
   experienceTypes.hidden = hasSelectedExperience;
   changeExperienceButton.hidden = !hasSelectedExperience;
   eventForm.style.display = allowed && hasSelectedExperience ? "grid" : "none";
+  trainingLogicBox.hidden = selectedExperience !== "capacitacion";
+  genericEventFields.hidden = selectedExperience === "capacitacion";
+  const trainingMode = selectedExperience === "capacitacion";
+  genericEventFields.querySelectorAll("input, select, textarea").forEach((input) => {
+    input.disabled = trainingMode;
+  });
+  trainingLogicBox.querySelectorAll("input, select, textarea").forEach((input) => {
+    input.disabled = !trainingMode;
+  });
 
   if (!hasSelectedExperience) {
     trainingLogicBox.hidden = true;
@@ -1016,7 +1088,10 @@ function renderOrganizarAccess() {
   eventGuestsLabel.textContent = formConfig.guestsLabel;
   eventFoodField.hidden = !formConfig.foodVisible;
   eventOptionsField.hidden = !formConfig.optionsVisible;
-  trainingLogicBox.hidden = selectedExperience !== "capacitacion";
+  if (selectedExperience === "capacitacion") {
+    renderTrainingSpaces();
+    renderTrainingFoodOptions();
+  }
 }
 
 function renderProfileSelector() {
@@ -1193,13 +1268,24 @@ eventForm.addEventListener("submit", async (event) => {
   }
 
   const formData = new FormData(eventForm);
+  if (selectedExperience === "capacitacion") {
+    if (!trainingStartDate.value || !trainingEndDate.value || !trainingPrimaryLocation.value) {
+      formMessage.textContent = "Completa fechas y selecciona la instalacion.";
+      return;
+    }
+    if (new Date(`${trainingEndDate.value}T${trainingEndTime.value}`) <= new Date(`${trainingStartDate.value}T${trainingStartTime.value}`)) {
+      formMessage.textContent = "La fecha y hora de fin deben ser posteriores al inicio.";
+      return;
+    }
+  }
   const eventData = {
     id: crypto.randomUUID(),
-    title: formData.get("title")?.toString().trim(),
+    title: formData.get("title")?.toString().trim() || formData.get("subject")?.toString().trim(),
     subject: formData.get("subject")?.toString().trim() || formData.get("title")?.toString().trim(),
-    objective: formData.get("objective")?.toString().trim(),
-    location: formData.get("location")?.toString(),
-    date: formData.get("date")?.toString(),
+    topic: formData.get("topic")?.toString() || null,
+    objective: formData.get("trainingObjective")?.toString().trim() || formData.get("objective")?.toString().trim(),
+    location: formData.get("trainingPrimaryLocation")?.toString() || formData.get("location")?.toString(),
+    date: formData.get("startDate")?.toString() || formData.get("date")?.toString(),
     startDate: formData.get("startDate")?.toString() || formData.get("date")?.toString(),
     startTime: formData.get("startTime")?.toString() || null,
     endDate: formData.get("endDate")?.toString() || null,
@@ -1213,6 +1299,20 @@ eventForm.addEventListener("submit", async (event) => {
     trainingAudience: formData.get("trainingAudience")?.toString() || null,
     trainingDays: formData.get("trainingDays")?.toString() || null,
     trainingModality: formData.get("trainingModality")?.toString() || null,
+    trainingDetails: selectedExperience === "capacitacion" ? {
+      topic: formData.get("topic")?.toString() || null,
+      subject: formData.get("subject")?.toString() || null,
+      objective: formData.get("trainingObjective")?.toString() || null,
+      confirmationLimit: formData.get("confirmationLimit") || "No",
+      confirmationDaysBefore: formData.get("confirmationDaysBefore") || null,
+      foodService: formData.get("foodService") || "No",
+      foodServiceDetail: formData.get("foodServiceDetail") || "No solicita",
+      foodByDay: [...formData.entries()].filter(([key]) => key.startsWith("foodDay_")).map(([key, value]) => ({ date: key.replace("foodDay_", ""), service: value })),
+      spaces: formData.getAll("spaces"),
+      spaceEquipment: formData.get("spaceEquipment") || null,
+      feedback: formData.get("feedback") || "No",
+      guestEmails: formData.get("guestEmails") || ""
+    } : null,
     ownerEmail: user.email,
     team: user.team,
     experienceType: selectedExperience,
@@ -1275,6 +1375,13 @@ calendarNextButton.addEventListener("click", () => {
   calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1);
   renderCalendar();
 });
+
+trainingPrimaryLocation.addEventListener("change", renderTrainingSpaces);
+[trainingStartDate, trainingEndDate, trainingStartTime, trainingEndTime].forEach((input) => input.addEventListener("change", renderTrainingFoodOptions));
+eventForm.querySelectorAll('input[name="foodService"]').forEach((input) => input.addEventListener("change", renderTrainingFoodOptions));
+eventForm.querySelectorAll('input[name="confirmationLimit"]').forEach((input) => input.addEventListener("change", () => {
+  confirmationDaysWrap.hidden = input.value !== "Si";
+}));
 
 locationsGrid.addEventListener("click", (event) => {
   const target = event.target;
